@@ -1,77 +1,41 @@
-# فاوا ایمن اُلکا — سامانه‌ی یکپارچه
+# Fava Imen Olka Enterprise Manual
 
-اسکلت اولیه‌ی پروژه با جنگو. این نسخه شامل هسته‌ی مشترک (`core`) و سایت عمومی
-معرفی شرکت (`website`) است و به‌صورت پیش‌فرض با SQLite بالا می‌آید (بدون نیاز به نصب
-پایگاه داده).
+Version: v1.0.0  
+Status: Initial documentation system
 
-## راه‌اندازی روی اوبونتو
+This repository is the official enterprise documentation system for Fava Imen Olka. It contains the company brand book, product documentation, architecture standards, design system, software standards, security standards, GitHub standards, roadmap, and company profile.
 
-```bash
-# ۱) پیش‌نیازها
-sudo apt update
-sudo apt install -y python3 python3-venv python3-pip
+## Repository Rules
 
-# ۲) محیط مجازی
-cd fava
-python3 -m venv .venv
-source .venv/bin/activate
+- Do not overclaim.
+- Clearly separate completed work, in-progress work, and planned products.
+- Use professional English.
+- Use clean Markdown.
+- Treat this repository as the single source of truth for the company.
+- Every new product, document, feature, or strategic decision must be added here.
+- Use versioning for major documents.
+- Start with v1.0.0.
 
-# ۳) نصب وابستگی‌ها
-pip install --upgrade pip
-pip install -r requirements.txt
+## Documentation Areas
 
-# ۴) تنظیمات محیط
-cp .env.example .env
-python -c "import secrets; print('SECRET_KEY=' + secrets.token_urlsafe(50))"   # خروجی را در .env بگذارید
+- [Company](company/README.md)
+- [Brand](brand/brand-book.md)
+- [Products](products/README.md)
+- [Architecture](architecture/enterprise-architecture.md)
+- [Design System](design-system/README.md)
+- [GitHub Standards](github/repository-standards.md)
+- [Roadmap](roadmap/company-roadmap.md)
+- [Sales](sales/company-profile.md)
+- [Security](security/security-standards.md)
 
-# ۵) دیتابیس و ادمین
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser
+## Status Model
 
-# ۶) اجرا
-python manage.py runserver
-```
+All major documents should use the following status categories:
 
-سپس:
-- سایت: http://127.0.0.1:8000
-- پنل ادمین: http://127.0.0.1:8000/admin
+- Completed: Work that is delivered, verified, and ready to reference.
+- In Progress: Work that is actively being defined, built, reviewed, or validated.
+- Planned: Work that is intended but not yet started or not yet approved.
 
-## ساختار فعلی
+## Versioning
 
-```
-fava/
-├── config/        تنظیمات، urls، wsgi/asgi
-├── core/          هسته‌ی مشترک: User, Role, Party, Payment + اعتبارسنج کد ملی
-├── website/       سایت عمومی (صفحه‌ی فرود)
-├── templates/     base.html و website/home.html
-└── static/css/    site.css (پالت سرمه‌ای/طلایی، RTL)
-```
-
-## استفاده از PostgreSQL (اختیاری)
-
-```bash
-sudo apt install -y postgresql libpq-dev
-sudo -u postgres psql -c "CREATE USER fava WITH PASSWORD 'secret';"
-sudo -u postgres psql -c "CREATE DATABASE fava OWNER fava;"
-# سپس بخش POSTGRES_* را در .env پر کنید و:
-pip install psycopg2-binary
-python manage.py migrate
-```
-
-## قدم‌های بعدی (ماژول‌ها)
-
-به‌ترتیب اولویت ساخته می‌شوند، هرکدام یک اپ جنگو روی همان هسته:
-
-1. `crm` — Lead, Pipeline, Stage, Activity
-2. `accounting` — Account, Invoice, Payment, مؤدیان
-3. `hr` — Employee, Attendance, Leave, Payroll
-4. `ticketing` — Ticket, TicketMessage, SLA
-5. `datacenter` — Plan, Subscription + IPBlock, IPLease (IPAM)
-6. `portal` — پورتال مشتری (خرید، تمدید، فاکتورها)
-
-ساخت یک اپ جدید:
-```bash
-python manage.py startapp crm
-# سپس "crm" را به INSTALLED_APPS در config/settings.py اضافه کنید
-```
+Major company documents start at v1.0.0. Version changes should be recorded when a document materially changes strategy, standards, product scope, security policy, brand rules, or operational guidance.
