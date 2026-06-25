@@ -6,6 +6,7 @@ app_name = "staff_portal"
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
+    path("otp/", views.email_otp, name="email_otp"),
     path("finance/", views.finance, name="finance"),
     path("live/", views.live, name="live"),
     path("manager/", views.manager, name="manager"),

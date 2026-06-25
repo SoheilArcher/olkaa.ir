@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}کد ورود امن | فاوا ایمن الکا{% endblock %}
+
+{% block body %}
+<main class="auth-page">
+  <section class="auth-panel auth-panel-narrow">
+    <a class="brand auth-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">SECURE LOGIN</span></span>
+    </a>
+    <span class="eyebrow">Email verification</span>
+    <h1>کد ورود را وارد کنید</h1>
+    <p>برای ادامه ورود، کد ۶ رقمی ارسال‌شده به ایمیل {{ request.user.email }} را وارد کنید. این کد کوتاه‌مدت است و فقط برای همین ورود اعتبار دارد.</p>
+
+    {% if messages %}
+      {% for message in messages %}
+      <p class="form-note">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    {% if email_error %}
+    <p class="form-note form-note-danger">{{ email_error }}</p>
+    {% endif %}
+
+    <form class="auth-form" method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <div class="form-grid form-grid-one">
+        <label>
+          <span>{{ form.code.label }}</span>
+          {{ form.code }}
+          {% if form.code.errors %}<small>{{ form.code.errors|striptags }}</small>{% endif %}
+        </label>
+      </div>
+      <button class="btn btn-gold" type="submit">تایید و ورود</button>
+    </form>
+
+    <form class="auth-form" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <input type="hidden" name="action" value="resend">
+      <button class="btn btn-ghost" type="submit">ارسال دوباره کد</button>
+    </form>
+  </section>
+</main>
+{% endblock %}

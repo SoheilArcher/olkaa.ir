@@ -18,6 +18,27 @@ class RegistrationCodeForm(forms.Form):
         return registration_code
 
 
+class EmailOtpForm(forms.Form):
+    code = forms.CharField(
+        label="کد ورود ایمیل",
+        max_length=6,
+        min_length=6,
+        widget=forms.TextInput(
+            attrs={
+                "autocomplete": "one-time-code",
+                "inputmode": "numeric",
+                "pattern": "[0-9]*",
+            }
+        ),
+    )
+
+    def clean_code(self):
+        code = "".join(ch for ch in self.cleaned_data["code"] if ch.isdigit())
+        if len(code) != 6:
+            raise ValidationError("کد ورود باید ۶ رقم باشد.")
+        return code
+
+
 class StaffRegistrationForm(forms.Form):
     first_name = forms.CharField(label="نام", max_length=150)
     last_name = forms.CharField(label="نام خانوادگی", max_length=150)

@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Permission
@@ -8,6 +10,7 @@ from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 
 from core.models import Role
@@ -16,7 +19,8 @@ from datacenter.models import PingCheck, PingTarget
 from hr.models import Attendance, EmployeeProfile, Payroll, StaffRegistrationRequest
 from ticketing.models import Ticket, TicketReply
 
-from .forms import RegistrationCodeForm, StaffRegistrationForm
+from .forms import EmailOtpForm, RegistrationCodeForm, StaffRegistrationForm
+from .security import ensure_otp_challenge, verify_otp_code, OTP_LAST_ERROR
 
 
 signer = TimestampSigner(salt="staff-registration")
@@ -88,6 +92,18 @@ ACCESS_PERMISSIONS = {
 
 def _is_staff_manager(user):
     return user.is_authenticated and user.is_staff
+
+
+def _safe_next(request):
+    fallback = "/portal/"
+    next_url = request.POST.get("next") or request.GET.get("next") or fallback
+    if url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return next_url
+    return fallback
 
 
 def _role(name, slug):
@@ -177,6 +193,36 @@ def dashboard(request):
         },
     ]
     return render(request, "staff_portal/dashboard.html", {"modules": modules})
+
+
+@login_required
+def email_otp(request):
+    next_url = _safe_next(request)
+    if request.method == "POST" and request.POST.get("action") == "resend":
+        ensure_otp_challenge(request, force=True)
+        messages.success(request, "کد جدید ارسال شد.")
+        return redirect(f"{reverse('staff_portal:email_otp')}?{urlencode({'next': next_url})}")
+
+    if request.method == "POST":
+        form = EmailOtpForm(request.POST)
+        if form.is_valid():
+            ok, error = verify_otp_code(request, form.cleaned_data["code"])
+            if ok:
+                return redirect(next_url)
+            form.add_error("code", error)
+    else:
+        ensure_otp_challenge(request)
+        form = EmailOtpForm()
+
+    return render(
+        request,
+        "staff_portal/email_otp.html",
+        {
+            "form": form,
+            "next_url": next_url,
+            "email_error": request.session.get(OTP_LAST_ERROR, ""),
+        },
+    )
 
 
 @user_passes_test(_is_staff_manager, login_url="/admin/login/")

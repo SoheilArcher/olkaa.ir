@@ -55,6 +55,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "staff_portal.middleware.EmailOtpMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -135,6 +136,8 @@ EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", False)
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "admin@olkaa.ir")
 STAFF_REGISTRATION_CODE = os.environ.get("STAFF_REGISTRATION_CODE", "")
 MONITORING_ALERT_EMAILS = os.environ.get("MONITORING_ALERT_EMAILS", DEFAULT_FROM_EMAIL)
+EMAIL_OTP_ENABLED = env_bool("EMAIL_OTP_ENABLED", True)
+EMAIL_OTP_EXPIRE_MINUTES = int(os.environ.get("EMAIL_OTP_EXPIRE_MINUTES", "10"))
 
 # ----- ظاهر پنل مدیریت (Unfold) -----
 UNFOLD = {

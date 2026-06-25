@@ -1046,6 +1046,19 @@ footer {
   font-size: 12px;
   font-weight: 600;
 }
+.form-note {
+  border: 1px solid rgba(195, 154, 77, .35);
+  border-radius: 6px;
+  background: #fbf7ef;
+  color: var(--navy);
+  padding: 10px 12px;
+  font-weight: 750;
+}
+.form-note-danger {
+  border-color: rgba(156, 47, 47, .28);
+  background: #fff4f4;
+  color: #9c2f2f;
+}
 .check-row {
   grid-template-columns: 18px 1fr;
   align-items: center;
