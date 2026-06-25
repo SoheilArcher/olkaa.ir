@@ -42,6 +42,7 @@ class PingTargetAdmin(admin.ModelAdmin):
         "target_type",
         "environment",
         "support_owner",
+        "alert_emails",
         "last_status",
         "last_latency_ms",
         "failure_count",
@@ -52,15 +53,15 @@ class PingTargetAdmin(admin.ModelAdmin):
     search_fields = ("name", "host", "support_owner", "support_hint", "note")
     fieldsets = (
         ("شناسه سرویس", {"fields": ("name", "host", "target_type", "environment", "is_active")}),
-        ("پشتیبانی", {"fields": ("support_owner", "support_hint", "note")}),
+        ("پشتیبانی", {"fields": ("support_owner", "support_hint", "alert_emails", "note")}),
         (
             "آخرین وضعیت",
             {
-                "fields": ("last_status", "last_latency_ms", "failure_count", "last_checked_at"),
+                "fields": ("last_status", "last_latency_ms", "failure_count", "last_checked_at", "last_alert_sent_at"),
             },
         ),
     )
-    readonly_fields = ("last_status", "last_latency_ms", "failure_count", "last_checked_at")
+    readonly_fields = ("last_status", "last_latency_ms", "failure_count", "last_checked_at", "last_alert_sent_at")
     actions = ("run_ping_check",)
 
     @admin.action(description="اجرای پینگ برای سرویس‌های انتخابی")
@@ -71,8 +72,8 @@ class PingTargetAdmin(admin.ModelAdmin):
 
 @admin.register(PingCheck)
 class PingCheckAdmin(admin.ModelAdmin):
-    list_display = ("target", "status", "latency_ms", "created_at")
-    list_filter = ("status", "created_at", "target")
+    list_display = ("target", "status", "latency_ms", "status_changed", "alert_sent_at", "created_at")
+    list_filter = ("status", "status_changed", "alert_sent_at", "created_at", "target")
     search_fields = ("target__name", "target__host", "output")
     autocomplete_fields = ("target",)
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = ("created_at", "updated_at", "alert_sent_at")

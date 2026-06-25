@@ -134,10 +134,17 @@ class PingTarget(TimeStamped):
     environment = models.CharField("محیط", max_length=20, choices=ENVIRONMENT_CHOICES, default=PRODUCTION)
     support_owner = models.CharField("مسئول/تیم پشتیبانی", max_length=120, blank=True)
     support_hint = models.CharField("راهنمای اقدام هنگام قطعی", max_length=255, blank=True)
+    alert_emails = models.CharField(
+        "ایمیل‌های هشدار",
+        max_length=500,
+        blank=True,
+        help_text="چند ایمیل را با کاما جدا کنید.",
+    )
     is_active = models.BooleanField("فعال", default=True)
     last_status = models.CharField("آخرین وضعیت", max_length=10, choices=STATUS_CHOICES, default=UNKNOWN)
     last_latency_ms = models.PositiveIntegerField("آخرین تاخیر (ms)", null=True, blank=True)
     last_checked_at = models.DateTimeField("آخرین بررسی", null=True, blank=True)
+    last_alert_sent_at = models.DateTimeField("آخرین هشدار ایمیلی", null=True, blank=True)
     failure_count = models.PositiveIntegerField("تعداد خطای پیاپی", default=0)
     note = models.CharField("توضیح", max_length=255, blank=True)
 
@@ -150,6 +157,7 @@ class PingTarget(TimeStamped):
         return f"{self.name} — {self.host}"
 
     def record_check(self, is_up, latency_ms=None, output=""):
+        previous_status = self.last_status
         status = self.UP if is_up else self.DOWN
         self.last_status = status
         self.last_latency_ms = latency_ms if is_up else None
@@ -169,7 +177,12 @@ class PingTarget(TimeStamped):
             status=status,
             latency_ms=self.last_latency_ms,
             output=output[:1000],
+            status_changed=previous_status != status,
         )
+
+    @property
+    def alert_recipients(self):
+        return [email.strip() for email in self.alert_emails.split(",") if email.strip()]
 
 
 class PingCheck(TimeStamped):
@@ -177,6 +190,8 @@ class PingCheck(TimeStamped):
     status = models.CharField("وضعیت", max_length=10, choices=PingTarget.STATUS_CHOICES)
     latency_ms = models.PositiveIntegerField("تاخیر (ms)", null=True, blank=True)
     output = models.TextField("خروجی", blank=True)
+    status_changed = models.BooleanField("تغییر وضعیت", default=False)
+    alert_sent_at = models.DateTimeField("زمان ارسال هشدار", null=True, blank=True)
 
     class Meta:
         verbose_name = "نتیجه پینگ"
