@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}اتاق کنترل زنده فاوا ایمن اُلکا{% endblock %}
+
+{% block body %}
+<main class="portal-shell live-shell">
+  <aside class="portal-side">
+    <a class="brand portal-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن اُلکا</span><span class="en">LIVE OPS</span></span>
+    </a>
+    <nav>
+      <a href="/portal/">داشبورد</a>
+      <a href="/portal/live/">اتاق کنترل زنده</a>
+      <a href="/portal/manager/">مدیریت داخلی</a>
+      <a href="/admin/ticketing/ticket/">تیکت‌ها</a>
+      <a href="/admin/datacenter/pingtarget/">مانیتورینگ</a>
+      <a href="/admin/">Django admin</a>
+    </nav>
+  </aside>
+
+  <section class="portal-main live-main">
+    <header class="portal-top live-top">
+      <div>
+        <span class="eyebrow">Live Operations</span>
+        <h1>اتاق کنترل زنده شرکت</h1>
+        <p>آخرین وضعیت سرورها، تیکت‌ها، ثبت‌نام‌ها، حضور امروز و صف‌های عملیاتی.</p>
+      </div>
+      <div class="live-clock">
+        <span>آخرین بروزرسانی</span>
+        <strong>{{ now|date:"H:i:s" }}</strong>
+        <small>{{ now|date:"Y-m-d" }}</small>
+      </div>
+    </header>
+
+    <div class="live-stats">
+      {% for item in stats %}
+      <article>
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+        <small>{{ item.caption }}</small>
+      </article>
+      {% endfor %}
+    </div>
+
+    <div class="live-layout">
+      <section class="live-panel live-panel-wide">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Monitoring</span>
+            <h2>وضعیت سرورها و سرویس‌ها</h2>
+          </div>
+          <a href="/admin/datacenter/pingtarget/add/">افزودن</a>
+        </div>
+        <div class="live-monitor-list">
+          {% for target in monitoring_targets %}
+          <a class="live-monitor {{ target.last_status }}" href="/admin/datacenter/pingtarget/{{ target.pk }}/change/">
+            <span>{{ target.name }}</span>
+            <b>{{ target.get_last_status_display }}</b>
+            <small>{{ target.host }}</small>
+            <small>{{ target.support_owner|default:"مسئول ثبت نشده" }}</small>
+            <em>{% if target.last_latency_ms %}{{ target.last_latency_ms }}ms{% else %}-{% endif %}</em>
+          </a>
+          {% empty %}
+          <div class="empty-state">هیچ هدف مانیتورینگی ثبت نشده است.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="live-panel">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Tickets</span>
+            <h2>تیکت‌های باز</h2>
+          </div>
+          <a href="/admin/ticketing/ticket/">همه</a>
+        </div>
+        <div class="live-list">
+          {% for ticket in open_tickets %}
+          <a href="/admin/ticketing/ticket/{{ ticket.pk }}/change/">
+            <span>{{ ticket.title }}</span>
+            <small>{{ ticket.get_status_display }} / {{ ticket.get_priority_display }}</small>
+            <b>{{ ticket.assigned_to.get_full_name|default:"بدون مسئول" }}</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">تیکت باز نداریم.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="live-panel">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Feed</span>
+            <h2>آخرین رخدادها</h2>
+          </div>
+        </div>
+        <div class="event-feed">
+          {% for event in recent_events %}
+          <a href="{{ event.href }}">
+            <time>{{ event.time|date:"H:i" }}</time>
+            <div>
+              <b>{{ event.type }}</b>
+              <span>{{ event.title }}</span>
+              <small>{{ event.detail }}</small>
+            </div>
+          </a>
+          {% empty %}
+          <div class="empty-state">رخدادی ثبت نشده است.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="live-panel">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Attendance</span>
+            <h2>حضور امروز</h2>
+          </div>
+          <a href="/admin/hr/attendance/">لیست</a>
+        </div>
+        <div class="live-list">
+          {% for attendance in attendance_today %}
+          <a href="/admin/hr/attendance/{{ attendance.pk }}/change/">
+            <span>{{ attendance.employee.user.get_full_name|default:attendance.employee.user.email }}</span>
+            <small>{{ attendance.get_status_display }}</small>
+            <b>{{ attendance.check_in|default:"-" }} / {{ attendance.check_out|default:"-" }}</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">برای امروز حضوری ثبت نشده است.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="live-panel">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">People</span>
+            <h2>ثبت‌نام‌های اخیر</h2>
+          </div>
+          <a href="/admin/hr/staffregistrationrequest/">مدیریت</a>
+        </div>
+        <div class="live-list">
+          {% for registration in recent_registrations %}
+          <a href="/admin/hr/staffregistrationrequest/{{ registration.pk }}/change/">
+            <span>{{ registration.user.get_full_name|default:registration.user.email }}</span>
+            <small>{{ registration.user.email }}</small>
+            <b>{{ registration.get_status_display }}</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">ثبت‌نامی نداریم.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="live-panel">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Payroll</span>
+            <h2>صف حقوق</h2>
+          </div>
+          <a href="/admin/hr/payroll/">همه</a>
+        </div>
+        <div class="live-list">
+          {% for payroll in payroll_queue %}
+          <a href="/admin/hr/payroll/{{ payroll.pk }}/change/">
+            <span>{{ payroll.employee.user.get_full_name|default:payroll.employee.user.email }}</span>
+            <small>{{ payroll.period }} / {{ payroll.get_status_display }}</small>
+            <b>{{ payroll.net_pay_rial|floatformat:"0" }} ریال</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">صف پرداخت خالی است.</div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.setTimeout(function () {
+    window.location.reload();
+  }, 30000);
+</script>
+{% endblock %}

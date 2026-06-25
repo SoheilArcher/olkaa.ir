@@ -11,8 +11,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from core.models import Role
-from datacenter.models import PingTarget
+from datacenter.models import PingCheck, PingTarget
 from hr.models import Attendance, EmployeeProfile, Payroll, StaffRegistrationRequest
+from ticketing.models import Ticket, TicketReply
 
 from .forms import RegistrationCodeForm, StaffRegistrationForm
 
@@ -132,6 +133,12 @@ def _approve_registration(registration, approver):
 def dashboard(request):
     modules = [
         {
+            "title": "اتاق کنترل زنده",
+            "caption": "مانیتورینگ، تیکت‌ها، حضور امروز و رخدادهای جاری",
+            "href": "/portal/live/",
+            "status": "زنده",
+        },
+        {
             "title": "واحد مالی",
             "caption": "کدینگ، اسناد، پرداخت‌ها و گزارش‌های مالی",
             "href": "/admin/accounting/",
@@ -169,6 +176,98 @@ def dashboard(request):
         },
     ]
     return render(request, "staff_portal/dashboard.html", {"modules": modules})
+
+
+@user_passes_test(_is_staff_manager, login_url="/admin/login/")
+def live(request):
+    now = timezone.localtime()
+    today = timezone.localdate()
+    open_tickets = Ticket.objects.exclude(status=Ticket.CLOSED).select_related("requester", "assigned_to").order_by(
+        "-priority",
+        "-created_at",
+    )[:10]
+    urgent_tickets = Ticket.objects.filter(priority__in=[Ticket.HIGH, Ticket.URGENT]).exclude(status=Ticket.CLOSED)
+    monitoring_targets = PingTarget.objects.order_by("last_status", "name")
+    down_targets = monitoring_targets.filter(last_status=PingTarget.DOWN)
+    attendance_today = Attendance.objects.filter(date=today).select_related("employee", "employee__user").order_by(
+        "employee__personnel_code"
+    )
+    recent_registrations = StaffRegistrationRequest.objects.select_related("user").order_by("-created_at")[:6]
+    payroll_queue = Payroll.objects.exclude(status=Payroll.PAID).select_related("employee", "employee__user").order_by(
+        "-period",
+        "-created_at",
+    )[:6]
+
+    recent_events = []
+    for ticket in Ticket.objects.select_related("requester", "assigned_to").order_by("-created_at")[:8]:
+        recent_events.append(
+            {
+                "time": ticket.created_at,
+                "type": "تیکت",
+                "title": ticket.title,
+                "detail": f"{ticket.get_status_display()} / {ticket.get_priority_display()}",
+                "href": f"/admin/ticketing/ticket/{ticket.pk}/change/",
+            }
+        )
+    for reply in TicketReply.objects.select_related("ticket", "author").order_by("-created_at")[:8]:
+        recent_events.append(
+            {
+                "time": reply.created_at,
+                "type": "پاسخ",
+                "title": reply.ticket.title,
+                "detail": reply.author.get_full_name() or reply.author.email or reply.author.username,
+                "href": f"/admin/ticketing/ticket/{reply.ticket_id}/change/",
+            }
+        )
+    for check in PingCheck.objects.select_related("target").filter(status=PingTarget.DOWN).order_by("-created_at")[:8]:
+        recent_events.append(
+            {
+                "time": check.created_at,
+                "type": "مانیتورینگ",
+                "title": check.target.name,
+                "detail": "پینگ ناموفق",
+                "href": f"/admin/datacenter/pingtarget/{check.target_id}/change/",
+            }
+        )
+    for registration in recent_registrations:
+        recent_events.append(
+            {
+                "time": registration.created_at,
+                "type": "ثبت‌نام",
+                "title": registration.user.get_full_name() or registration.user.email,
+                "detail": registration.get_status_display(),
+                "href": f"/admin/hr/staffregistrationrequest/{registration.pk}/change/",
+            }
+        )
+    recent_events = sorted(recent_events, key=lambda item: item["time"], reverse=True)[:18]
+
+    stats = [
+        {"label": "سرورهای قطع", "value": down_targets.count(), "caption": "نیازمند بررسی سریع"},
+        {"label": "تیکت‌های باز", "value": Ticket.objects.exclude(status=Ticket.CLOSED).count(), "caption": "در جریان"},
+        {"label": "تیکت‌های فوری", "value": urgent_tickets.count(), "caption": "اولویت بالا"},
+        {"label": "حضور امروز", "value": attendance_today.count(), "caption": "رکورد ثبت شده"},
+        {
+            "label": "در انتظار تایید",
+            "value": StaffRegistrationRequest.objects.filter(status=StaffRegistrationRequest.PENDING_APPROVAL).count(),
+            "caption": "ثبت‌نام کارمند",
+        },
+        {"label": "پرداخت‌نشده", "value": Payroll.objects.exclude(status=Payroll.PAID).count(), "caption": "حقوق و دستمزد"},
+    ]
+    return render(
+        request,
+        "staff_portal/live.html",
+        {
+            "attendance_today": attendance_today[:10],
+            "monitoring_targets": monitoring_targets[:16],
+            "down_targets": down_targets,
+            "now": now,
+            "open_tickets": open_tickets,
+            "payroll_queue": payroll_queue,
+            "recent_events": recent_events,
+            "recent_registrations": recent_registrations,
+            "stats": stats,
+        },
+    )
 
 
 @user_passes_test(_is_staff_manager, login_url="/admin/login/")
