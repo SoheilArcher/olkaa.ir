@@ -2,6 +2,7 @@
 Django>=5.0,<6.0
 python-dotenv>=1.0
 gunicorn>=26.0
+django-unfold>=0.70
 
 # --- فاز بعد: هرکدام را هنگام نیاز از حالت توضیح خارج کنید ---
 # psycopg2-binary>=2.9      # PostgreSQL (نیازمند libpq-dev روی اوبونتو)

@@ -477,6 +477,107 @@ footer {
   font-weight: 800;
 }
 
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 36px 18px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-700) 48%, var(--paper) 48%);
+}
+.auth-panel {
+  width: min(940px, 100%);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 34px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .15);
+}
+.auth-panel-narrow {
+  width: min(620px, 100%);
+}
+.auth-brand {
+  background: var(--navy);
+  border-radius: 7px;
+  padding: 12px 14px;
+  margin-bottom: 28px;
+}
+.auth-panel h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.25;
+  margin: 10px 0 10px;
+}
+.auth-panel p {
+  color: var(--muted);
+  max-width: 62ch;
+}
+.auth-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 26px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.auth-form label {
+  display: grid;
+  gap: 7px;
+  font-weight: 750;
+}
+.auth-form input:not([type="checkbox"]) {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--navy);
+  background: var(--panel);
+}
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(195, 154, 77, .15);
+}
+.auth-form small,
+.form-alert {
+  color: #9c2f2f;
+  font-size: 12px;
+  font-weight: 600;
+}
+.check-row {
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 11px 12px;
+}
+.auth-link {
+  color: var(--muted);
+  font-weight: 750;
+}
+.dev-link {
+  margin: 22px 0;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+.dev-link span {
+  display: block;
+  color: var(--gold);
+  font-weight: 850;
+  margin-bottom: 6px;
+}
+.dev-link a {
+  direction: ltr;
+  display: block;
+  color: var(--navy-600);
+}
+
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
 .reveal.in { opacity: 1; transform: none; }
 @keyframes rise { to { opacity: 1; transform: translateY(0); } }
@@ -532,6 +633,8 @@ footer {
   .portal-side { position: static; }
   .portal-grid { grid-template-columns: 1fr; }
   .portal-top { display: grid; }
+  .form-grid { grid-template-columns: 1fr; }
+  .auth-panel { padding: 24px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

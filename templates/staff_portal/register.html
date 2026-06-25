@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}ثبت‌نام کارمند | فاوا ایمن الکا{% endblock %}
+
+{% block body %}
+<main class="auth-page">
+  <section class="auth-panel">
+    <a class="brand auth-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">STAFF ACCESS</span></span>
+    </a>
+    <span class="eyebrow">Employee onboarding</span>
+    <h1>ثبت‌نام پورتال داخلی</h1>
+    <p>بعد از تایید ایمیل، درخواست برای مدیر سیستم ارسال می‌شود و دسترسی‌های لازم توسط مدیر فعال می‌گردد.</p>
+
+    <form class="auth-form" method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div class="form-alert">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <div class="form-grid">
+        {% for field in form %}
+          {% if field.field.widget.input_type == 'checkbox' %}
+          <label class="check-row">
+            {{ field }}
+            <span>{{ field.label }}</span>
+          </label>
+          {% else %}
+          <label>
+            <span>{{ field.label }}</span>
+            {{ field }}
+            {% if field.errors %}<small>{{ field.errors|striptags }}</small>{% endif %}
+          </label>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <button class="btn btn-gold" type="submit">ارسال درخواست ثبت‌نام</button>
+      <a class="auth-link" href="/admin/login/">قبلا تایید شده‌ام</a>
+    </form>
+  </section>
+</main>
+{% endblock %}
