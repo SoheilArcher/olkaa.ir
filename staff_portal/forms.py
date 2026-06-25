@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -14,6 +15,7 @@ class StaffRegistrationForm(forms.Form):
     national_id = forms.CharField(label="کد ملی", max_length=10, required=False)
     requested_department = forms.CharField(label="واحد", max_length=80, required=False)
     requested_job_title = forms.CharField(label="عنوان شغلی", max_length=120, required=False)
+    registration_code = forms.CharField(label="رمز ثبت‌نام داخلی", widget=forms.PasswordInput)
     password1 = forms.CharField(label="رمز عبور", widget=forms.PasswordInput)
     password2 = forms.CharField(label="تکرار رمز عبور", widget=forms.PasswordInput)
     requested_finance = forms.BooleanField(label="واحد مالی", required=False)
@@ -46,6 +48,10 @@ class StaffRegistrationForm(forms.Form):
                 validate_password(password1)
             except ValidationError as error:
                 self.add_error("password1", error)
+        registration_code = cleaned.get("registration_code")
+        expected_code = getattr(settings, "STAFF_REGISTRATION_CODE", "")
+        if expected_code and registration_code != expected_code:
+            self.add_error("registration_code", "رمز ثبت‌نام داخلی درست نیست.")
         return cleaned
 
     def save(self):

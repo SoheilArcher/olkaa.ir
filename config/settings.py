@@ -133,6 +133,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", False)
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "admin@olkaa.ir")
+STAFF_REGISTRATION_CODE = os.environ.get("STAFF_REGISTRATION_CODE", "")
 
 # ----- ظاهر پنل مدیریت (Unfold) -----
 UNFOLD = {
