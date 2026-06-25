@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from core.models import Party, TimeStamped
 
@@ -95,3 +96,68 @@ class IPLease(TimeStamped):
 
     def __str__(self):
         return f"{self.assigned_cidr} — {self.party}"
+
+
+class PingTarget(TimeStamped):
+    UP = "up"
+    DOWN = "down"
+    UNKNOWN = "unknown"
+    STATUS_CHOICES = [
+        (UP, "آنلاین"),
+        (DOWN, "قطع"),
+        (UNKNOWN, "نامشخص"),
+    ]
+
+    name = models.CharField("نام سرویس", max_length=140)
+    host = models.CharField("آدرس/IP", max_length=255, unique=True)
+    is_active = models.BooleanField("فعال", default=True)
+    last_status = models.CharField("آخرین وضعیت", max_length=10, choices=STATUS_CHOICES, default=UNKNOWN)
+    last_latency_ms = models.PositiveIntegerField("آخرین تاخیر (ms)", null=True, blank=True)
+    last_checked_at = models.DateTimeField("آخرین بررسی", null=True, blank=True)
+    failure_count = models.PositiveIntegerField("تعداد خطای پیاپی", default=0)
+    note = models.CharField("توضیح", max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = "هدف مانیتورینگ"
+        verbose_name_plural = "مانیتورینگ پینگ"
+        ordering = ("name",)
+
+    def __str__(self):
+        return f"{self.name} — {self.host}"
+
+    def record_check(self, is_up, latency_ms=None, output=""):
+        status = self.UP if is_up else self.DOWN
+        self.last_status = status
+        self.last_latency_ms = latency_ms if is_up else None
+        self.last_checked_at = timezone.now()
+        self.failure_count = 0 if is_up else self.failure_count + 1
+        self.save(
+            update_fields=(
+                "last_status",
+                "last_latency_ms",
+                "last_checked_at",
+                "failure_count",
+                "updated_at",
+            )
+        )
+        return PingCheck.objects.create(
+            target=self,
+            status=status,
+            latency_ms=self.last_latency_ms,
+            output=output[:1000],
+        )
+
+
+class PingCheck(TimeStamped):
+    target = models.ForeignKey(PingTarget, verbose_name="هدف", on_delete=models.CASCADE, related_name="checks")
+    status = models.CharField("وضعیت", max_length=10, choices=PingTarget.STATUS_CHOICES)
+    latency_ms = models.PositiveIntegerField("تاخیر (ms)", null=True, blank=True)
+    output = models.TextField("خروجی", blank=True)
+
+    class Meta:
+        verbose_name = "نتیجه پینگ"
+        verbose_name_plural = "نتایج پینگ"
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.target} — {self.get_status_display()}"

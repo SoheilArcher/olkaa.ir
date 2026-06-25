@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import Permission
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.core.mail import BadHeaderError
@@ -10,6 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from core.models import Role
+from datacenter.models import PingTarget
 from hr.models import Attendance, EmployeeProfile, Payroll, StaffRegistrationRequest
 
 from .forms import RegistrationCodeForm, StaffRegistrationForm
@@ -27,6 +29,59 @@ ACCESS_FIELDS = [
     ("requested_datacenter", "دیتاسنتر", "datacenter-operator", "کارشناس دیتاسنتر"),
     ("requested_user_manager", "مدیریت کاربران", "user-manager", "مدیریت کاربران"),
 ]
+
+ACCESS_PERMISSIONS = {
+    "requested_finance": {
+        ("accounting", "view_account"),
+        ("accounting", "view_voucher"),
+        ("accounting", "change_voucher"),
+        ("core", "view_payment"),
+        ("core", "change_payment"),
+        ("core", "view_party"),
+    },
+    "requested_hr": {
+        ("hr", "view_employeeprofile"),
+        ("hr", "change_employeeprofile"),
+        ("hr", "view_staffregistrationrequest"),
+    },
+    "requested_attendance": {
+        ("hr", "view_attendance"),
+        ("hr", "add_attendance"),
+        ("hr", "change_attendance"),
+    },
+    "requested_payroll": {
+        ("hr", "view_payroll"),
+        ("hr", "add_payroll"),
+        ("hr", "change_payroll"),
+    },
+    "requested_ticketing": {
+        ("ticketing", "view_ticket"),
+        ("ticketing", "add_ticket"),
+        ("ticketing", "change_ticket"),
+        ("ticketing", "view_ticketreply"),
+        ("ticketing", "add_ticketreply"),
+        ("ticketing", "change_ticketreply"),
+    },
+    "requested_datacenter": {
+        ("datacenter", "view_serviceplan"),
+        ("datacenter", "view_subscription"),
+        ("datacenter", "change_subscription"),
+        ("datacenter", "view_ipblock"),
+        ("datacenter", "view_iplease"),
+        ("datacenter", "view_pingtarget"),
+        ("datacenter", "add_pingtarget"),
+        ("datacenter", "change_pingtarget"),
+        ("datacenter", "view_pingcheck"),
+    },
+    "requested_user_manager": {
+        ("core", "view_user"),
+        ("core", "change_user"),
+        ("core", "view_role"),
+        ("core", "change_role"),
+        ("hr", "view_staffregistrationrequest"),
+        ("hr", "change_staffregistrationrequest"),
+    },
+}
 
 
 def _is_staff_manager(user):
@@ -51,6 +106,13 @@ def _approve_registration(registration, approver):
     for field, _label, slug, role_name in ACCESS_FIELDS:
         if getattr(registration, field):
             registration.user.roles.add(_role(role_name, slug))
+            for app_label, codename in ACCESS_PERMISSIONS.get(field, set()):
+                permission = Permission.objects.filter(
+                    content_type__app_label=app_label,
+                    codename=codename,
+                ).first()
+                if permission:
+                    registration.user.user_permissions.add(permission)
 
     EmployeeProfile.objects.get_or_create(
         user=registration.user,
@@ -154,12 +216,13 @@ def manager(request):
     employees = EmployeeProfile.objects.select_related("user").order_by("department", "personnel_code")[:12]
     payrolls = Payroll.objects.select_related("employee", "employee__user").order_by("-period", "-created_at")[:8]
     attendance_today = Attendance.objects.filter(date=timezone.localdate()).select_related("employee", "employee__user")[:8]
+    monitoring_targets = PingTarget.objects.order_by("last_status", "name")[:12]
 
     stats = [
         {"label": "در انتظار تایید", "value": pending_requests.count(), "caption": "بعد از تایید ایمیل"},
         {"label": "کارمندان فعال", "value": EmployeeProfile.objects.filter(status=EmployeeProfile.ACTIVE).count(), "caption": "پرونده پرسنلی"},
         {"label": "فیش‌های پرداخت‌نشده", "value": Payroll.objects.exclude(status=Payroll.PAID).count(), "caption": "حقوق و دستمزد"},
-        {"label": "حضور امروز", "value": Attendance.objects.filter(date=timezone.localdate()).count(), "caption": "ثبت‌شده امروز"},
+        {"label": "مانیتورینگ قطع", "value": PingTarget.objects.filter(last_status=PingTarget.DOWN).count(), "caption": "پینگ ناموفق"},
     ]
     return render(
         request,
@@ -169,6 +232,7 @@ def manager(request):
             "attendance_today": attendance_today,
             "employees": employees,
             "payrolls": payrolls,
+            "monitoring_targets": monitoring_targets,
             "pending_cards": pending_cards,
             "pending_requests": pending_requests,
             "recent_requests": recent_requests,

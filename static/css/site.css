@@ -683,6 +683,43 @@ footer {
   font-size: 13px;
   white-space: nowrap;
 }
+.monitor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.monitor-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-right: 4px solid #8995a3;
+  border-radius: 7px;
+  padding: 13px;
+  color: var(--navy);
+}
+.monitor-item.up { border-right-color: #1f8f5f; }
+.monitor-item.down { border-right-color: #b23333; }
+.monitor-item span {
+  font-weight: 850;
+}
+.monitor-item b {
+  color: var(--navy);
+  font-size: 13px;
+}
+.monitor-item small {
+  direction: ltr;
+  text-align: right;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.monitor-item em {
+  color: var(--gold);
+  font-family: var(--en);
+  font-style: normal;
+  font-weight: 800;
+}
 .empty-state {
   background: var(--panel);
   border: 1px dashed var(--line);
@@ -857,7 +894,8 @@ footer {
   .access-grid,
   .request-main dl { grid-template-columns: 1fr; }
   .compact-table a,
-  .recent-flow a { grid-template-columns: 1fr; }
+  .recent-flow a,
+  .monitor-grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .auth-panel { padding: 24px; }
 }

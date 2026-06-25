@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import IPBlock, IPLease, ServicePlan, Subscription
+from .management.commands.check_ping_targets import check_target
+from .models import IPBlock, IPLease, PingCheck, PingTarget, ServicePlan, Subscription
 
 
 @admin.register(ServicePlan)
@@ -31,3 +32,25 @@ class IPLeaseAdmin(admin.ModelAdmin):
     list_filter = ("status", "start_date", "end_date")
     search_fields = ("assigned_cidr", "block__cidr", "party__name")
     autocomplete_fields = ("block", "party")
+
+
+@admin.register(PingTarget)
+class PingTargetAdmin(admin.ModelAdmin):
+    list_display = ("name", "host", "last_status", "last_latency_ms", "failure_count", "last_checked_at", "is_active")
+    list_filter = ("last_status", "is_active", "last_checked_at")
+    search_fields = ("name", "host", "note")
+    actions = ("run_ping_check",)
+
+    @admin.action(description="اجرای پینگ برای سرویس‌های انتخابی")
+    def run_ping_check(self, request, queryset):
+        for target in queryset:
+            check_target(target)
+
+
+@admin.register(PingCheck)
+class PingCheckAdmin(admin.ModelAdmin):
+    list_display = ("target", "status", "latency_ms", "created_at")
+    list_filter = ("status", "created_at", "target")
+    search_fields = ("target__name", "target__host", "output")
+    autocomplete_fields = ("target",)
+    readonly_fields = ("created_at", "updated_at")

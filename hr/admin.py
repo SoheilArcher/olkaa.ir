@@ -1,6 +1,7 @@
 import csv
 
 from django.contrib import admin, messages
+from django.contrib.auth.models import Permission
 from django.http import HttpResponse
 from django.utils import timezone
 
@@ -181,17 +182,102 @@ class StaffRegistrationRequestAdmin(admin.ModelAdmin):
 
     def _apply_roles(self, registration):
         role_map = [
-            (registration.requested_finance, "کارشناس مالی", "finance-operator"),
-            (registration.requested_hr, "منابع انسانی", "hr-operator"),
-            (registration.requested_attendance, "حضور و غیاب", "attendance-operator"),
-            (registration.requested_payroll, "حقوق و دستمزد", "payroll-operator"),
-            (registration.requested_ticketing, "تیکتینگ", "ticket-operator"),
-            (registration.requested_datacenter, "کارشناس دیتاسنتر", "datacenter-operator"),
-            (registration.requested_user_manager, "مدیریت کاربران", "user-manager"),
+            (
+                registration.requested_finance,
+                "کارشناس مالی",
+                "finance-operator",
+                {
+                    ("accounting", "view_account"),
+                    ("accounting", "view_voucher"),
+                    ("accounting", "change_voucher"),
+                    ("core", "view_payment"),
+                    ("core", "change_payment"),
+                    ("core", "view_party"),
+                },
+            ),
+            (
+                registration.requested_hr,
+                "منابع انسانی",
+                "hr-operator",
+                {
+                    ("hr", "view_employeeprofile"),
+                    ("hr", "change_employeeprofile"),
+                    ("hr", "view_staffregistrationrequest"),
+                },
+            ),
+            (
+                registration.requested_attendance,
+                "حضور و غیاب",
+                "attendance-operator",
+                {
+                    ("hr", "view_attendance"),
+                    ("hr", "add_attendance"),
+                    ("hr", "change_attendance"),
+                },
+            ),
+            (
+                registration.requested_payroll,
+                "حقوق و دستمزد",
+                "payroll-operator",
+                {
+                    ("hr", "view_payroll"),
+                    ("hr", "add_payroll"),
+                    ("hr", "change_payroll"),
+                },
+            ),
+            (
+                registration.requested_ticketing,
+                "تیکتینگ",
+                "ticket-operator",
+                {
+                    ("ticketing", "view_ticket"),
+                    ("ticketing", "add_ticket"),
+                    ("ticketing", "change_ticket"),
+                    ("ticketing", "view_ticketreply"),
+                    ("ticketing", "add_ticketreply"),
+                    ("ticketing", "change_ticketreply"),
+                },
+            ),
+            (
+                registration.requested_datacenter,
+                "کارشناس دیتاسنتر",
+                "datacenter-operator",
+                {
+                    ("datacenter", "view_serviceplan"),
+                    ("datacenter", "view_subscription"),
+                    ("datacenter", "change_subscription"),
+                    ("datacenter", "view_ipblock"),
+                    ("datacenter", "view_iplease"),
+                    ("datacenter", "view_pingtarget"),
+                    ("datacenter", "add_pingtarget"),
+                    ("datacenter", "change_pingtarget"),
+                    ("datacenter", "view_pingcheck"),
+                },
+            ),
+            (
+                registration.requested_user_manager,
+                "مدیریت کاربران",
+                "user-manager",
+                {
+                    ("core", "view_user"),
+                    ("core", "change_user"),
+                    ("core", "view_role"),
+                    ("core", "change_role"),
+                    ("hr", "view_staffregistrationrequest"),
+                    ("hr", "change_staffregistrationrequest"),
+                },
+            ),
         ]
-        for enabled, name, slug in role_map:
+        for enabled, name, slug, permissions in role_map:
             if enabled:
                 registration.user.roles.add(self._role(name, slug))
+                for app_label, codename in permissions:
+                    permission = Permission.objects.filter(
+                        content_type__app_label=app_label,
+                        codename=codename,
+                    ).first()
+                    if permission:
+                        registration.user.user_permissions.add(permission)
 
     @admin.action(description="تایید کارمند و فعال‌سازی دسترسی‌ها")
     def approve_requests(self, request, queryset):

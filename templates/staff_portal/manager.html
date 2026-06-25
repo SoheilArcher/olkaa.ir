@@ -154,6 +154,28 @@
     <section class="manager-section">
       <div class="manager-heading">
         <div>
+          <span class="eyebrow">Ping Monitoring</span>
+          <h2>مانیتورینگ سرورها</h2>
+        </div>
+        <a href="/admin/datacenter/pingtarget/add/">افزودن سرور</a>
+      </div>
+      <div class="monitor-grid">
+        {% for target in monitoring_targets %}
+        <a class="monitor-item {{ target.last_status }}" href="/admin/datacenter/pingtarget/{{ target.pk }}/change/">
+          <span>{{ target.name }}</span>
+          <b>{{ target.get_last_status_display }}</b>
+          <small>{{ target.host }}</small>
+          <em>{% if target.last_latency_ms %}{{ target.last_latency_ms }}ms{% else %}-{% endif %}</em>
+        </a>
+        {% empty %}
+        <div class="empty-state">هنوز سروری برای پینگ ثبت نشده است.</div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="manager-section">
+      <div class="manager-heading">
+        <div>
           <span class="eyebrow">Recent Flow</span>
           <h2>آخرین ثبت‌نام‌ها</h2>
         </div>
