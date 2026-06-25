@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}ورود به ثبت‌نام کارمند | فاوا ایمن الکا{% endblock %}
+
+{% block body %}
+<main class="auth-page">
+  <section class="auth-panel auth-panel-narrow">
+    <a class="brand auth-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">STAFF ACCESS</span></span>
+    </a>
+    <span class="eyebrow">Private onboarding</span>
+    <h1>رمز ثبت‌نام داخلی</h1>
+    <p>برای شروع ثبت‌نام، رمز داخلی را وارد کنید. بعد از عبور از این مرحله، فرم اطلاعات کارمند نمایش داده می‌شود.</p>
+
+    <form class="auth-form" method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-grid form-grid-one">
+        {% for field in form %}
+        <label>
+          <span>{{ field.label }}</span>
+          {{ field }}
+          {% if field.errors %}<small>{{ field.errors|striptags }}</small>{% endif %}
+        </label>
+        {% endfor %}
+      </div>
+      <button class="btn btn-gold" type="submit">ادامه ثبت‌نام</button>
+    </form>
+  </section>
+</main>
+{% endblock %}

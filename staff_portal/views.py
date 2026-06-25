@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from hr.models import StaffRegistrationRequest
 
-from .forms import StaffRegistrationForm
+from .forms import RegistrationCodeForm, StaffRegistrationForm
 
 
 signer = TimestampSigner(salt="staff-registration")
@@ -60,6 +60,16 @@ def dashboard(request):
 
 
 def register(request):
+    if not request.session.get("staff_registration_unlocked"):
+        if request.method == "POST":
+            code_form = RegistrationCodeForm(request.POST)
+            if code_form.is_valid():
+                request.session["staff_registration_unlocked"] = True
+                return redirect("staff_portal:register")
+        else:
+            code_form = RegistrationCodeForm()
+        return render(request, "staff_portal/register_gate.html", {"form": code_form})
+
     if request.method == "POST":
         form = StaffRegistrationForm(request.POST)
         if form.is_valid():

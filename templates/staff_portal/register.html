@@ -15,7 +15,7 @@
     </a>
     <span class="eyebrow">Employee onboarding</span>
     <h1>ثبت‌نام پورتال داخلی</h1>
-    <p>بعد از تایید ایمیل، درخواست برای مدیر سیستم ارسال می‌شود و دسترسی‌های لازم توسط مدیر فعال می‌گردد.</p>
+    <p>بعد از تایید ایمیل، درخواست برای مدیر سیستم ارسال می‌شود. دسترسی‌های مالی، منابع انسانی، دیتاسنتر و سایر بخش‌ها فقط توسط مدیر فعال می‌گردد.</p>
 
     <form class="auth-form" method="post" novalidate>
       {% csrf_token %}
@@ -25,18 +25,11 @@
 
       <div class="form-grid">
         {% for field in form %}
-          {% if field.field.widget.input_type == 'checkbox' %}
-          <label class="check-row">
-            {{ field }}
-            <span>{{ field.label }}</span>
-          </label>
-          {% else %}
           <label>
             <span>{{ field.label }}</span>
             {{ field }}
             {% if field.errors %}<small>{{ field.errors|striptags }}</small>{% endif %}
           </label>
-          {% endif %}
         {% endfor %}
       </div>
 
