@@ -396,6 +396,87 @@ footer {
 }
 .footer-in { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
 
+.portal-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  background: var(--paper);
+}
+.portal-side {
+  background: var(--navy);
+  color: #fff;
+  padding: 28px 22px;
+}
+.portal-brand { margin-bottom: 34px; }
+.portal-side nav {
+  display: grid;
+  gap: 8px;
+}
+.portal-side nav a {
+  padding: 12px 14px;
+  border-radius: 6px;
+  color: #c9d2de;
+  border: 1px solid transparent;
+}
+.portal-side nav a:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .05);
+}
+.portal-main {
+  padding: 34px;
+}
+.portal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.portal-top h1 {
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.25;
+  margin: 8px 0 10px;
+}
+.portal-top p {
+  color: var(--muted);
+  max-width: 68ch;
+}
+.portal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.portal-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+}
+.portal-card span {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+}
+.portal-card h2 {
+  font-size: 22px;
+  margin: 12px 0 8px;
+}
+.portal-card p {
+  color: var(--muted);
+  font-size: 14.5px;
+}
+.portal-card a {
+  margin-top: auto;
+  color: var(--navy);
+  font-weight: 800;
+}
+
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
 .reveal.in { opacity: 1; transform: none; }
 @keyframes rise { to { opacity: 1; transform: translateY(0); } }
@@ -447,6 +528,10 @@ footer {
   .card { min-height: auto; }
   .hero-points div { grid-template-columns: 1fr; gap: 3px; }
   .footer-in { align-items: flex-start; }
+  .portal-shell { grid-template-columns: 1fr; }
+  .portal-side { position: static; }
+  .portal-grid { grid-template-columns: 1fr; }
+  .portal-top { display: grid; }
 }
 
 @media (prefers-reduced-motion: reduce) {

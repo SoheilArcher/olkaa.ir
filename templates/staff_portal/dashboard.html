@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}پورتال کارمندان فاوا ایمن اُلکا{% endblock %}
+
+{% block body %}
+<main class="portal-shell">
+  <aside class="portal-side">
+    <a class="brand portal-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن اُلکا</span><span class="en">STAFF PORTAL</span></span>
+    </a>
+    <nav>
+      <a href="/portal/">داشبورد</a>
+      <a href="/admin/accounting/">واحد مالی</a>
+      <a href="/admin/hr/">منابع انسانی</a>
+      <a href="/admin/ticketing/">تیکتینگ</a>
+      <a href="/admin/datacenter/">دیتاسنتر</a>
+      <a href="/admin/core/">کاربران و نقش‌ها</a>
+    </nav>
+  </aside>
+
+  <section class="portal-main">
+    <header class="portal-top">
+      <div>
+        <span class="eyebrow">Internal Operations</span>
+        <h1>پورتال داخلی کارمندان</h1>
+        <p>مرکز دسترسی به واحد مالی، منابع انسانی، حضور و غیاب، حقوق و دستمزد، تیکتینگ و مدیریت دیتاسنتر.</p>
+      </div>
+      <a class="btn btn-gold" href="/admin/">ورود به پنل مدیریت</a>
+    </header>
+
+    <div class="portal-grid">
+      {% for module in modules %}
+      <article class="portal-card">
+        <span>{{ module.status }}</span>
+        <h2>{{ module.title }}</h2>
+        <p>{{ module.caption }}</p>
+        <a href="{{ module.href }}">باز کردن</a>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+{% endblock %}

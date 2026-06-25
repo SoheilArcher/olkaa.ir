@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     "core",
     "website",
     "accounting",
+    "staff_portal",
+    "hr",
+    "ticketing",
+    "datacenter",
 ]
 
 MIDDLEWARE = [
@@ -116,6 +120,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = "/admin/login/"
 
 # ----- ظاهر پنل مدیریت (Unfold) -----
 UNFOLD = {
