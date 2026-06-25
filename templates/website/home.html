@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}فاوا ایمن اُلکا — نرم‌افزار و خدمات دیتاسنتر{% endblock %}
+
+{% block body %}
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="فاوا ایمن اُلکا">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span>
+        <span class="nm">فاوا ایمن اُلکا</span>
+        <span class="en">FAVA EMEN OLKA</span>
+      </span>
+    </a>
+    <nav class="links" id="menu">
+      <a href="#products">نرم‌افزار</a>
+      <a href="#datacenter">دیتاسنتر</a>
+      <a href="#approach">رویکرد ما</a>
+      <a href="#offices">دفاتر</a>
+      <a href="#contact">تماس</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#contact" class="btn btn-gold">درخواست دمو</a>
+      <button class="burger" id="burger" aria-label="منو">≡</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" style="padding:0">
+    <div class="wrap hero-in">
+      <div class="hero-copy">
+        <span class="eyebrow">Aviation · Accounting · Hospitality</span>
+        <h1>نرم‌افزار تخصصی برای صنعت <b>هوانوردی</b>، مالی و <b>مهمان‌نوازی</b></h1>
+        <p class="lead">از سامانه‌های هوانوردی و RMS تا حسابداری و هتل‌داری — راهکارهای یکپارچه‌ای می‌سازیم که کسب‌وکار شما را به اوج می‌رساند.</p>
+        <div class="actions">
+          <a href="#contact" class="btn btn-gold">درخواست دمو</a>
+          <a href="#products" class="btn btn-ghost">مشاهده‌ی محصولات</a>
+        </div>
+        <div class="meta">
+          <div><small>SOLUTIONS</small><span>۴ خانواده‌ی نرم‌افزاری</span></div>
+          <div><small>OFFICES</small><span>تهران · کیش · فرودگاه امام</span></div>
+          <div><small>LOCAL</small><span>منطبق با مقررات ایران</span></div>
+          <div><small>IPv4 POOL</small><span class="sg" style="letter-spacing:.5px">64,000</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg class="blades" viewBox="0 0 120 100" fill="none">
+          <polygon points="15,85 31,85 43,57 27,57" fill="#24456b"/>
+          <polygon points="42,85 58,85 70,41 54,41" fill="#33597f"/>
+          <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+        </svg>
+        <span class="baseline"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="products" id="products">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">خدمات و محصولات</span>
+        <h2>راهکارهای نرم‌افزاری ما</h2>
+        <p>چهار خانواده‌ی محصول که هرکدام برای یک صنعت خاص ساخته شده‌اند و کنار هم یک اکوسیستم یکپارچه می‌سازند.</p>
+      </div>
+      <div class="grid4">
+        <article class="card reveal">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 13l9-2 4-8 2 1-2 8 6 2-1 2-6-1-3 5-2-1 1-5-5-1z" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+          <span class="tag">AVIATION</span>
+          <h3>نرم‌افزار هوانوردی</h3>
+          <p>سامانه‌های فروش بلیت، رزرواسیون و مدیریت پرواز برای ایرلاین‌ها و دفاتر خدمات مسافرتی.</p>
+        </article>
+        <article class="card reveal">
+          <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke-linecap="round"/></svg></div>
+          <span class="tag">ACCOUNTING</span>
+          <h3>نرم‌افزار حسابداری</h3>
+          <p>حسابداری مالی منطبق با استانداردهای ایران، صدور فاکتور رسمی و یکپارچگی با سامانه‌ی مؤدیان.</p>
+        </article>
+        <article class="card reveal">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 19V9m5 10V5m5 14v-7" stroke-linecap="round"/><path d="M4 11l5-5 4 3 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="tag">RMS</span>
+          <h3>سامانه‌ی مدیریت درآمد</h3>
+          <p>قیمت‌گذاری هوشمند و مدیریت ظرفیت برای بیشترین بهره‌وری از درآمد.</p>
+        </article>
+        <article class="card reveal">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V5a1 1 0 011-1h8a1 1 0 011 1v16M15 21V9h4v12" stroke-linejoin="round"/><path d="M8 8h3M8 12h3" stroke-linecap="round"/></svg></div>
+          <span class="tag">HOSPITALITY</span>
+          <h3>نرم‌افزار هتل‌داری</h3>
+          <p>مدیریت پذیرش، رزرو و عملیات روزانه‌ی هتل‌ها و اقامتگاه‌ها در یک سامانه‌ی واحد.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATACENTER -->
+  <section class="datacenter" id="datacenter">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Data Center · زیرساخت</span>
+        <h2>خدمات دیتاسنتر</h2>
+        <p>در کنار نرم‌افزار، زیرساخت شبکه هم ارائه می‌دهیم: اینترنت اختصاصی، پهنای باند پایدار و اجاره‌ی آدرس IP.</p>
+      </div>
+      <div class="dc-grid">
+        <article class="dc-card reveal">
+          <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" stroke-linecap="round"/></svg></div>
+          <span class="tag">INTERNET · BANDWIDTH</span>
+          <h3>اینترنت و پهنای باند</h3>
+          <p>اینترنت اختصاصی و پهنای باند با کیفیت برای سازمان‌ها و کسب‌وکارها، با پشتیبانی پایدار.</p>
+        </article>
+        <article class="dc-card reveal">
+          <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01" stroke-linecap="round"/></svg></div>
+          <span class="tag">IP LEASING</span>
+          <h3>اجاره‌ی آدرس IP</h3>
+          <p>اجاره‌ی بلوک‌های IPv4 از یک استخر بزرگ و اختصاصی، متناسب با نیاز شبکه‌ی شما.</p>
+          <div class="dc-stat"><b>64,000</b><span>آدرس IPv4 در دسترس</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPROACH -->
+  <section class="approach" id="approach">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">چرا فاوا ایمن اُلکا</span>
+        <h2>یکپارچه، بومی، و کنار شما</h2>
+        <p>سه اصلی که هر محصول ما را شکل می‌دهد.</p>
+      </div>
+      <div class="grid3">
+        <div class="feat reveal"><div class="n">۰۱</div><h3>یکپارچگی واقعی</h3><p>محصولات روی یک هسته‌ی مشترک ساخته می‌شوند؛ مشتری، مالی و عملیات در یک جا به هم می‌رسند.</p></div>
+        <div class="feat reveal"><div class="n">۰۲</div><h3>بومی‌سازی برای ایران</h3><p>تقویم شمسی، واحد ریال/تومان و انطباق با مقررات مالیاتی از روز اول لحاظ شده است.</p></div>
+        <div class="feat reveal"><div class="n">۰۳</div><h3>پشتیبانی پایدار</h3><p>تیمی که محصول را می‌سازد، در کنار شما می‌ماند؛ از استقرار تا توسعه‌ی مستمر.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFICES -->
+  <section class="offices" id="offices">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">دفاتر</span>
+        <h2>جایی که هستیم</h2>
+        <p>حضور در سه نقطه‌ی کلیدی، نزدیک به صنایعی که خدمت‌شان می‌کنیم.</p>
+      </div>
+      <div class="grid3 off">
+        <div class="o reveal"><span class="pin"></span><div class="city">تهران</div><div class="desc">دفتر مرکزی — میرداماد</div></div>
+        <div class="o reveal"><span class="pin"></span><div class="city">جزیره‌ی کیش</div><div class="desc">دفتر منطقه‌ای</div></div>
+        <div class="o reveal"><span class="pin"></span><div class="city">فرودگاه امام خمینی (ره)</div><div class="desc">شهر فرودگاهی — جایگاه CIP</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="contact">
+    <div class="wrap">
+      <h2 class="reveal">بیایید با هم به اوج برسیم</h2>
+      <p class="reveal">برای دمو یا گفت‌وگو درباره‌ی نیاز کسب‌وکارتان، با ما در ارتباط باشید.</p>
+      <div class="actions reveal">
+        <a href="https://www.olkaa.ir" class="btn btn-navy">درخواست دمو</a>
+        <a href="tel:90000206" class="btn btn-line">تماس: ۹۰۰۰۰۲۰۶</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <a class="brand" href="#top" aria-label="فاوا ایمن اُلکا">
+        <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+          <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+          <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+          <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+        </svg>
+        <span><span class="nm">فاوا ایمن اُلکا</span><span class="en">FAVA EMEN OLKA</span></span>
+      </a>
+      <div class="info">
+        <a href="https://www.olkaa.ir">www.olkaa.ir</a>
+        <a href="tel:90000206">90000206</a>
+        <span>Tehran · Kish · IKA</span>
+      </div>
+    </div>
+    <div class="copy">
+      <span>© ۱۴۰۵ فاوا ایمن اُلکا — تمامی حقوق محفوظ است.</span>
+      <span class="en">FAVA EMEN OLKA</span>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.body.classList.add('ready');
+  var burger=document.getElementById('burger'),menu=document.getElementById('menu');
+  burger&&burger.addEventListener('click',function(){menu.classList.toggle('open')});
+  menu&&menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){menu.classList.remove('open')})});
+  var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+</script>
+{% endblock %}
