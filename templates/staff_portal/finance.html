@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}داشبورد مالی فاوا ایمن اُلکا{% endblock %}
+
+{% block body %}
+<main class="portal-shell">
+  <aside class="portal-side">
+    <a class="brand portal-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن اُلکا</span><span class="en">FINANCE</span></span>
+    </a>
+    <nav>
+      <a href="/portal/">داشبورد</a>
+      <a href="/portal/finance/">داشبورد مالی</a>
+      <a href="/admin/accounting/invoice/">فاکتورها</a>
+      <a href="/admin/accounting/expense/">هزینه‌ها</a>
+      <a href="/admin/accounting/bankaccount/">حساب‌های بانکی</a>
+      <a href="/admin/accounting/voucher/">اسناد حسابداری</a>
+    </nav>
+  </aside>
+
+  <section class="portal-main finance-main">
+    <header class="portal-top finance-top">
+      <div>
+        <span class="eyebrow">Finance Control</span>
+        <h1>داشبورد ساده مالی</h1>
+        <p>جای خلاصه و قابل فهم برای فاکتورها، هزینه‌ها، مطالبات، حساب‌های بانکی و اسناد مالی.</p>
+      </div>
+      <div class="finance-actions">
+        <a class="btn btn-gold" href="/admin/accounting/invoice/add/">فاکتور جدید</a>
+        <a class="btn btn-ghost" href="/admin/accounting/expense/add/">ثبت هزینه</a>
+      </div>
+    </header>
+
+    <div class="finance-stats">
+      {% for item in stats %}
+      <article>
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+        <small>{{ item.caption }}</small>
+      </article>
+      {% endfor %}
+    </div>
+
+    <div class="finance-layout">
+      <section class="finance-panel">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Receivables</span>
+            <h2>فاکتورهای باز</h2>
+          </div>
+          <a href="/admin/accounting/invoice/">همه</a>
+        </div>
+        <div class="finance-list">
+          {% for invoice in open_invoices %}
+          <a href="/admin/accounting/invoice/{{ invoice.pk }}/change/">
+            <span>{{ invoice.number }} · {{ invoice.party }}</span>
+            <small>{{ invoice.title }}</small>
+            <b>{{ invoice.total_rial|floatformat:"0" }} ریال</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">فاکتور باز نداریم.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="finance-panel">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Costs</span>
+            <h2>هزینه‌های در صف</h2>
+          </div>
+          <a href="/admin/accounting/expense/">همه</a>
+        </div>
+        <div class="finance-list">
+          {% for expense in unpaid_expenses %}
+          <a href="/admin/accounting/expense/{{ expense.pk }}/change/">
+            <span>{{ expense.title }}</span>
+            <small>{{ expense.category|default:"بدون دسته" }} · {{ expense.get_status_display }}</small>
+            <b>{{ expense.amount_rial|floatformat:"0" }} ریال</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">هزینه در صف نداریم.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="finance-panel finance-panel-wide">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Recent</span>
+            <h2>آخرین رویدادهای مالی</h2>
+          </div>
+          <a href="/admin/accounting/">ورود به مالی کامل</a>
+        </div>
+        <div class="finance-grid-list">
+          <div>
+            <h3>آخرین فاکتورها</h3>
+            {% for invoice in invoices %}
+            <a href="/admin/accounting/invoice/{{ invoice.pk }}/change/">
+              <span>{{ invoice.number }}</span>
+              <small>{{ invoice.party }} / {{ invoice.get_status_display }}</small>
+              <b>{{ invoice.total_rial|floatformat:"0" }} ریال</b>
+            </a>
+            {% empty %}
+            <div class="empty-state">فاکتوری ثبت نشده است.</div>
+            {% endfor %}
+          </div>
+          <div>
+            <h3>آخرین هزینه‌ها</h3>
+            {% for expense in expenses %}
+            <a href="/admin/accounting/expense/{{ expense.pk }}/change/">
+              <span>{{ expense.title }}</span>
+              <small>{{ expense.date }} / {{ expense.get_status_display }}</small>
+              <b>{{ expense.amount_rial|floatformat:"0" }} ریال</b>
+            </a>
+            {% empty %}
+            <div class="empty-state">هزینه‌ای ثبت نشده است.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+{% endblock %}

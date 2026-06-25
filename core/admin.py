@@ -189,8 +189,11 @@ class UserAdmin(BaseUserAdmin):
         ("اطلاعات شخصی", {"fields": ("first_name", "last_name", "email")}),
         ("مدیریت فاوا", {"fields": ("party", "roles")}),
         (
-            "سطح دسترسی Django",
-            {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")},
+            "وضعیت دسترسی",
+            {
+                "fields": ("is_active", "is_staff", "is_superuser"),
+                "description": "برای دسترسی‌های روزمره از نقش‌ها و صفحه مدیریت داخلی استفاده کنید.",
+            },
         ),
         ("زمان‌ها", {"fields": ("last_login", "date_joined")}),
     )

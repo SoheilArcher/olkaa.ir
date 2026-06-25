@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from core.models import Role
+from accounting.models import Expense, Invoice
 from datacenter.models import PingCheck, PingTarget
 from hr.models import Attendance, EmployeeProfile, Payroll, StaffRegistrationRequest
 from ticketing.models import Ticket, TicketReply
@@ -140,8 +141,8 @@ def dashboard(request):
         },
         {
             "title": "واحد مالی",
-            "caption": "کدینگ، اسناد، پرداخت‌ها و گزارش‌های مالی",
-            "href": "/admin/accounting/",
+            "caption": "فاکتورها، هزینه‌ها، پرداخت‌ها و گزارش سریع",
+            "href": "/portal/finance/",
             "status": "فعال",
         },
         {
@@ -176,6 +177,39 @@ def dashboard(request):
         },
     ]
     return render(request, "staff_portal/dashboard.html", {"modules": modules})
+
+
+@user_passes_test(_is_staff_manager, login_url="/admin/login/")
+def finance(request):
+    invoices = Invoice.objects.select_related("party").order_by("-issue_date", "-created_at")
+    expenses = Expense.objects.select_related("party", "bank_account").order_by("-date", "-created_at")
+    open_invoices = invoices.exclude(status__in=[Invoice.PAID, Invoice.CANCELED])
+    paid_invoices = invoices.filter(status=Invoice.PAID)
+    unpaid_expenses = expenses.exclude(status=Expense.PAID)
+    paid_expenses = expenses.filter(status=Expense.PAID)
+
+    paid_income = sum(invoice.total_rial for invoice in paid_invoices[:200])
+    receivable = sum(invoice.total_rial for invoice in open_invoices[:200])
+    paid_cost = sum(expense.amount_rial for expense in paid_expenses[:200])
+    pending_cost = sum(expense.amount_rial for expense in unpaid_expenses[:200])
+
+    stats = [
+        {"label": "درآمد وصول‌شده", "value": f"{paid_income:,}", "caption": "ریال"},
+        {"label": "مطالبات باز", "value": f"{receivable:,}", "caption": "ریال"},
+        {"label": "هزینه پرداخت‌شده", "value": f"{paid_cost:,}", "caption": "ریال"},
+        {"label": "هزینه در صف", "value": f"{pending_cost:,}", "caption": "ریال"},
+    ]
+    return render(
+        request,
+        "staff_portal/finance.html",
+        {
+            "expenses": expenses[:10],
+            "invoices": invoices[:10],
+            "open_invoices": open_invoices[:8],
+            "unpaid_expenses": unpaid_expenses[:8],
+            "stats": stats,
+        },
+    )
 
 
 @user_passes_test(_is_staff_manager, login_url="/admin/login/")
