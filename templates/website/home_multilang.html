@@ -17,6 +17,7 @@
 <meta property="og:title" content="{{ content.title }}">
 <meta property="og:description" content="{{ content.description }}">
 <meta property="og:url" content="{{ canonical }}">
+<meta property="og:locale" content="{% if lang == 'fa' %}fa_IR{% elif lang == 'ar' %}ar_AR{% else %}en_US{% endif %}">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
@@ -27,8 +28,38 @@
   "url": "https://olkaa.ir/",
   "email": "admin@olkaa.ir",
   "telephone": "90000206",
+  "foundingLocation": "Tehran, Iran",
   "areaServed": ["IR", "AE", "IQ", "TR"],
-  "sameAs": []
+  "sameAs": ["https://www.instagram.com/0lkatech/"],
+  "knowsAbout": [
+    "Software development",
+    "Aviation software",
+    "Datacenter services",
+    "Dedicated internet",
+    "IPv4 leasing",
+    "CIP services",
+    "Home Check-in"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "90000206",
+    "email": "admin@olkaa.ir",
+    "contactType": "customer support",
+    "availableLanguage": ["fa", "en", "ar"]
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ content.brand }}",
+  "url": "https://olkaa.ir/",
+  "inLanguage": "{{ lang }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Fava Emen Olka"
+  }
 }
 </script>
 {% endblock %}

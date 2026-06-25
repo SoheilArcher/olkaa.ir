@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 
 
 LANGUAGES = {
@@ -142,6 +143,8 @@ def robots_txt(request):
         [
             "User-agent: *",
             "Allow: /",
+            "Disallow: /admin/",
+            "Disallow: /portal/",
             f"Sitemap: {request.build_absolute_uri(reverse('website:sitemap'))}",
             "",
         ]
@@ -151,17 +154,26 @@ def robots_txt(request):
 
 def sitemap_xml(request):
     urls = [
-        (request.build_absolute_uri("/" + data["path"]), code)
+        (code, request.build_absolute_uri("/" + data["path"]))
         for code, data in LANGUAGES.items()
     ]
+    today = timezone.localdate().isoformat()
     items = []
-    for url, _code in urls:
+    for _code, url in urls:
         links = "".join(
-            f'<xhtml:link rel="alternate" hreflang="{code}" href="{alt_url}" />'
-            for code, alt_url in urls
+            f'<xhtml:link rel="alternate" hreflang="{alt_code}" href="{alt_url}" />'
+            for alt_code, alt_url in urls
         )
-        links += f'<xhtml:link rel="alternate" hreflang="x-default" href="{urls[0][0]}" />'
-        items.append(f"<url><loc>{url}</loc>{links}</url>")
+        links += f'<xhtml:link rel="alternate" hreflang="x-default" href="{urls[0][1]}" />'
+        items.append(
+            "<url>"
+            f"<loc>{url}</loc>"
+            f"<lastmod>{today}</lastmod>"
+            "<changefreq>weekly</changefreq>"
+            "<priority>0.8</priority>"
+            f"{links}"
+            "</url>"
+        )
     body = (
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
