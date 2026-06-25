@@ -6,4 +6,8 @@ app_name = "website"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("en/", views.home, {"lang": "en"}, name="home_en"),
+    path("ar/", views.home, {"lang": "ar"}, name="home_ar"),
+    path("robots.txt", views.robots_txt, name="robots"),
+    path("sitemap.xml", views.sitemap_xml, name="sitemap"),
 ]

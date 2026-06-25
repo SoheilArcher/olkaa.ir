@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load website_extras %}
+
+{% block html_lang %}{{ lang }}{% endblock %}
+{% block html_dir %}{{ content.dir }}{% endblock %}
+{% block title %}{{ content.title }}{% endblock %}
+{% block description %}{{ content.description }}{% endblock %}
+{% block seo %}
+<link rel="canonical" href="{{ canonical }}">
+{% for code, url in alternates.items %}
+<link rel="alternate" hreflang="{{ code }}" href="{{ url }}">
+{% endfor %}
+<link rel="alternate" hreflang="x-default" href="{{ alternates.fa }}">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Fava Emen Olka">
+<meta property="og:title" content="{{ content.title }}">
+<meta property="og:description" content="{{ content.description }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Fava Emen Olka",
+  "alternateName": ["فاوا ایمن الکا", "فاوا إمن أولكا"],
+  "url": "https://olkaa.ir/",
+  "email": "admin@olkaa.ir",
+  "telephone": "90000206",
+  "areaServed": ["IR", "AE", "IQ", "TR"],
+  "sameAs": []
+}
+</script>
+{% endblock %}
+
+{% block body %}
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="{{ content.brand }}">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span>
+        <span class="nm">{{ content.brand }}</span>
+        <span class="en">FAVA EMEN OLKA</span>
+      </span>
+    </a>
+    <nav class="links" id="menu">
+      {% for section, label in nav_pairs %}
+      <a href="#{{ section }}">{{ label }}</a>
+      {% endfor %}
+    </nav>
+    <div class="nav-cta">
+      <div class="lang-switch" aria-label="Language">
+        {% for code, url in alternates.items %}
+          <a href="{{ url }}" {% if code == lang %}class="active"{% endif %}>{{ code|upper }}</a>
+        {% endfor %}
+      </div>
+      <a href="/portal/register/" class="btn btn-ghost">{{ content.employee }}</a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-in">
+      <div class="hero-copy">
+        <span class="eyebrow">Software · Aviation · Datacenter · CIP</span>
+        <h1>{{ content.hero }}</h1>
+        <p class="lead">{{ content.lead }}</p>
+        <div class="actions">
+          <a href="#solutions" class="btn btn-gold">{{ content.cta_primary }}</a>
+          <a href="#signature" class="btn btn-ghost">{{ content.cta_secondary }}</a>
+        </div>
+        <div class="meta">
+          <div><small>DOMAIN</small><span>olkaa.ir</span></div>
+          <div><small>OFFICES</small><span>{{ content.offices }}</span></div>
+          <div><small>IPV4 POOL</small><span class="sg">64,000</span></div>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="{{ content.brand }}">
+        <svg class="hero-card-mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+          <polygon points="15,85 31,85 43,57 27,57" fill="#ffffff"/>
+          <polygon points="42,85 58,85 70,41 54,41" fill="#ffffff"/>
+          <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+        </svg>
+        <div class="hero-card-title">
+          <span>FAVA EMEN OLKA</span>
+          <b>{{ content.brand }}</b>
+        </div>
+        <div class="hero-card-rule"></div>
+        <div class="hero-points">
+          <div><span>Software</span><b>Aviation · Finance · RMS · Hospitality</b></div>
+          <div><span>Datacenter</span><b>Dedicated internet · Bandwidth · IPv4 leasing</b></div>
+          <div><span>CIP</span><b>Home Check-in & CIP Express</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="solutions" id="solutions">
+    <div class="wrap">
+      <div class="section-kicker">Solutions</div>
+      <div class="section-title">
+        <h2>{{ content.solutions_title }}</h2>
+        <p>{{ content.solutions_text }}</p>
+      </div>
+      <div class="solution-grid">
+        {% for tag, titles in common.solutions %}
+        <article class="card reveal">
+          <span class="tag">{{ tag }}</span>
+          <h3>{{ titles|get_item:lang }}</h3>
+          <p>{{ common.solution_text|get_item:lang }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="signature" id="signature">
+    <div class="wrap signature-in">
+      <div>
+        <span class="eyebrow">Signature Service</span>
+        <h2>{{ content.signature_title }}</h2>
+        <p>{{ content.signature_text }}</p>
+      </div>
+      <div class="signature-steps">
+        {% for step in common.steps|get_item:lang %}
+        <article><b>0{{ forloop.counter }}</b><span>{{ step }}</span><p>{{ content.signature_text }}</p></article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="datacenter" id="datacenter">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Data Center</span>
+        <h2>{{ content.datacenter_title }}</h2>
+        <p>{{ content.datacenter_text }}</p>
+      </div>
+      <div class="dc-grid">
+        <article class="dc-card reveal">
+          <span class="tag">INTERNET · BANDWIDTH</span>
+          <h3>Dedicated Internet</h3>
+          <p>{{ content.datacenter_text }}</p>
+        </article>
+        <article class="dc-card reveal">
+          <span class="tag">IP LEASING</span>
+          <h3>IPv4 Leasing</h3>
+          <p>{{ content.datacenter_text }}</p>
+          <div class="dc-stat"><b>64,000</b><span>IPv4</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="clients" id="clients">
+    <div class="wrap">
+      <div class="section-kicker">Clients</div>
+      <div class="section-title">
+        <h2>{{ content.clients_title }}</h2>
+        <p>{{ content.clients_text }}</p>
+      </div>
+      <div class="client-grid">
+        {% for client in common.clients|get_item:lang %}
+        <article class="client-card reveal"><h3>{{ client }}</h3><p>{{ content.clients_text }}</p></article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="offices" id="offices">
+    <div class="wrap">
+      <div class="section-kicker light">Offices</div>
+      <div class="office-grid">
+        <article><span></span><h3>Tehran</h3><p>Head office</p></article>
+        <article><span></span><h3>Kish Island</h3><p>Regional office</p></article>
+        <article><span></span><h3>Imam Khomeini Airport</h3><p>CIP terminal</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap contact-in">
+      <div>
+        <svg class="contact-mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+          <polygon points="15,85 31,85 43,57 27,57" fill="#0E2138"/>
+          <polygon points="42,85 58,85 70,41 54,41" fill="#15314f"/>
+          <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+        </svg>
+        <h2>{{ content.contact_title }}</h2>
+        <p>{{ content.contact_text }}</p>
+      </div>
+      <div class="contact-box">
+        <a href="https://www.olkaa.ir">www.olkaa.ir</a>
+        <a href="mailto:admin@olkaa.ir">admin@olkaa.ir</a>
+        <a href="tel:90000206">90000206</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-in">
+    <a class="brand" href="#top" aria-label="{{ content.brand }}">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">{{ content.brand }}</span><span class="en">FAVA EMEN OLKA</span></span>
+    </a>
+    <span>{{ content.copyright }}</span>
+  </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.body.classList.add('ready');
+  var burger = document.getElementById('burger');
+  var menu = document.getElementById('menu');
+  burger && burger.addEventListener('click', function () {
+    var isOpen = menu.classList.toggle('open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  menu && menu.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      menu.classList.remove('open');
+      burger && burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.14 });
+    document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+  }
+</script>
+{% endblock %}
