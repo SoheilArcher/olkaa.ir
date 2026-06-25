@@ -16,6 +16,7 @@
     <nav>
       <a href="/portal/">داشبورد</a>
       <a href="/portal/manager/">مدیریت داخلی</a>
+      <a href="/portal/shifts/">شیفت‌بندی</a>
       <a href="/admin/hr/staffregistrationrequest/">درخواست‌ها در ادمین</a>
       <a href="/admin/hr/employeeprofile/">پرونده پرسنلی</a>
       <a href="/admin/hr/payroll/">حقوق و دستمزد</a>
@@ -50,6 +51,27 @@
       </article>
       {% endfor %}
     </div>
+
+    <section class="manager-section">
+      <div class="manager-heading">
+        <div>
+          <span class="eyebrow">Shift Planning</span>
+          <h2>شیفت‌های فعال</h2>
+        </div>
+        <a href="/admin/hr/shiftassignment/add/">تخصیص شیفت</a>
+      </div>
+      <div class="compact-table">
+        {% for assignment in shift_assignments %}
+        <a href="/admin/hr/shiftassignment/{{ assignment.pk }}/change/">
+          <span>{{ assignment.employee.user.get_full_name|default:assignment.employee.user.email }}</span>
+          <small>{{ assignment.shift.name }} / {{ assignment.weekdays_display }}</small>
+          <b>{{ assignment.shift.start_time|time:"H:i" }}-{{ assignment.shift.end_time|time:"H:i" }}</b>
+        </a>
+        {% empty %}
+        <div class="empty-state">هنوز برنامه شیفتی ثبت نشده است.</div>
+        {% endfor %}
+      </div>
+    </section>
 
     <section class="manager-section">
       <div class="manager-heading">

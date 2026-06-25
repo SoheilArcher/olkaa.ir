@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from core.models import Role
 
-from .models import Attendance, EmployeeProfile, Payroll, StaffRegistrationRequest
+from .models import Attendance, EmployeeProfile, Payroll, Shift, ShiftAssignment, StaffRegistrationRequest
 
 
 @admin.register(EmployeeProfile)
@@ -48,6 +48,28 @@ class AttendanceAdmin(admin.ModelAdmin):
     search_fields = ("employee__personnel_code", "employee__user__username", "employee__user__first_name")
     autocomplete_fields = ("employee",)
     date_hierarchy = "date"
+
+
+@admin.register(Shift)
+class ShiftAdmin(admin.ModelAdmin):
+    list_display = ("name", "start_time", "end_time", "break_minutes", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("name", "description")
+
+
+@admin.register(ShiftAssignment)
+class ShiftAssignmentAdmin(admin.ModelAdmin):
+    list_display = ("employee", "shift", "start_date", "end_date", "weekdays_display", "is_active")
+    list_filter = ("is_active", "shift", "start_date")
+    search_fields = (
+        "employee__personnel_code",
+        "employee__user__username",
+        "employee__user__first_name",
+        "employee__user__last_name",
+        "shift__name",
+    )
+    autocomplete_fields = ("employee", "shift")
+    date_hierarchy = "start_date"
 
 
 @admin.register(Payroll)
@@ -213,6 +235,10 @@ class StaffRegistrationRequestAdmin(admin.ModelAdmin):
                     ("hr", "view_attendance"),
                     ("hr", "add_attendance"),
                     ("hr", "change_attendance"),
+                    ("hr", "view_shift"),
+                    ("hr", "view_shiftassignment"),
+                    ("hr", "add_shiftassignment"),
+                    ("hr", "change_shiftassignment"),
                 },
             ),
             (

@@ -73,6 +73,75 @@ class Attendance(TimeStamped):
         return f"{self.employee} — {self.date}"
 
 
+class Shift(TimeStamped):
+    name = models.CharField("نام شیفت", max_length=80)
+    start_time = models.TimeField("شروع")
+    end_time = models.TimeField("پایان")
+    break_minutes = models.PositiveSmallIntegerField("استراحت (دقیقه)", default=0)
+    color = models.CharField("رنگ نمایشی", max_length=7, default="#C39A4D")
+    is_active = models.BooleanField("فعال", default=True)
+    description = models.CharField("توضیح", max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = "شیفت"
+        verbose_name_plural = "شیفت‌ها"
+        ordering = ("start_time", "name")
+
+    def __str__(self):
+        return f"{self.name} ({self.start_time:%H:%M} تا {self.end_time:%H:%M})"
+
+
+class ShiftAssignment(TimeStamped):
+    WEEKDAY_CHOICES = [
+        ("0", "دوشنبه"),
+        ("1", "سه‌شنبه"),
+        ("2", "چهارشنبه"),
+        ("3", "پنجشنبه"),
+        ("4", "جمعه"),
+        ("5", "شنبه"),
+        ("6", "یکشنبه"),
+    ]
+
+    employee = models.ForeignKey(
+        EmployeeProfile, verbose_name="کارمند", on_delete=models.CASCADE, related_name="shift_assignments"
+    )
+    shift = models.ForeignKey(Shift, verbose_name="شیفت", on_delete=models.PROTECT, related_name="assignments")
+    start_date = models.DateField("شروع برنامه")
+    end_date = models.DateField("پایان برنامه", null=True, blank=True)
+    weekdays = models.CharField("روزهای هفته", max_length=20, default="5,6,0,1,2")
+    is_active = models.BooleanField("فعال", default=True)
+    note = models.CharField("توضیح", max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = "برنامه شیفت"
+        verbose_name_plural = "برنامه شیفت‌ها"
+        ordering = ("-start_date", "employee")
+        indexes = [
+            models.Index(fields=("start_date", "end_date", "is_active")),
+        ]
+
+    def __str__(self):
+        return f"{self.employee} — {self.shift}"
+
+    def applies_to(self, date):
+        if not self.is_active or not self.shift.is_active:
+            return False
+        if date < self.start_date:
+            return False
+        if self.end_date and date > self.end_date:
+            return False
+        return str(date.weekday()) in self.weekday_list
+
+    @property
+    def weekday_list(self):
+        return [item.strip() for item in self.weekdays.split(",") if item.strip()]
+
+    @property
+    def weekdays_display(self):
+        labels = dict(self.WEEKDAY_CHOICES)
+        return "، ".join(labels.get(item, item) for item in self.weekday_list)
+
+
 class Payroll(TimeStamped):
     DRAFT = "draft"
     APPROVED = "approved"

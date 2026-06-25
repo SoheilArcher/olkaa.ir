@@ -16,6 +16,7 @@
     <nav>
       <a href="/portal/">داشبورد</a>
       <a href="/portal/live/">اتاق کنترل زنده</a>
+      <a href="/portal/shifts/">شیفت‌بندی</a>
       <a href="/portal/manager/">مدیریت داخلی</a>
       <a href="/admin/ticketing/ticket/">تیکت‌ها</a>
       <a href="/admin/datacenter/pingtarget/">مانیتورینگ</a>
@@ -132,6 +133,27 @@
           </a>
           {% empty %}
           <div class="empty-state">برای امروز حضوری ثبت نشده است.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="live-panel">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Shifts</span>
+            <h2>شیفت امروز</h2>
+          </div>
+          <a href="/portal/shifts/">برنامه</a>
+        </div>
+        <div class="live-list">
+          {% for assignment in shifts_today %}
+          <a href="/admin/hr/shiftassignment/{{ assignment.pk }}/change/">
+            <span>{{ assignment.employee.user.get_full_name|default:assignment.employee.user.email }}</span>
+            <small>{{ assignment.shift.name }}</small>
+            <b>{{ assignment.shift.start_time|time:"H:i" }} / {{ assignment.shift.end_time|time:"H:i" }}</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">برای امروز شیفتی ثبت نشده است.</div>
           {% endfor %}
         </div>
       </section>

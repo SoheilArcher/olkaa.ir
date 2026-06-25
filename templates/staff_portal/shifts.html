@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}شیفت‌بندی کارمندان | فاوا ایمن الکا{% endblock %}
+
+{% block body %}
+<main class="portal-shell">
+  <aside class="portal-side">
+    <a class="brand portal-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">SHIFT PLAN</span></span>
+    </a>
+    <nav>
+      <a href="/portal/">داشبورد</a>
+      <a href="/portal/live/">اتاق کنترل زنده</a>
+      <a href="/portal/shifts/">شیفت‌بندی</a>
+      <a href="/admin/hr/shift/add/">تعریف شیفت</a>
+      <a href="/admin/hr/shiftassignment/add/">تخصیص شیفت</a>
+      <a href="/admin/hr/attendance/">حضور و غیاب</a>
+    </nav>
+  </aside>
+
+  <section class="portal-main">
+    <header class="portal-top">
+      <div>
+        <span class="eyebrow">Network & Support Schedule</span>
+        <h1>برنامه شیفت کارمندان</h1>
+        <p>نمای هفت‌روزه برای اینکه مشخص باشد هر روز چه کسی مسئول پشتیبانی، شبکه و عملیات است.</p>
+      </div>
+      <a class="btn btn-gold" href="/admin/hr/shiftassignment/add/">تخصیص شیفت</a>
+    </header>
+
+    <section class="manager-section">
+      <div class="manager-heading">
+        <div>
+          <span class="eyebrow">Next 7 Days</span>
+          <h2>تقویم شیفت‌ها</h2>
+        </div>
+        <a href="/admin/hr/shift/">تعریف شیفت‌ها</a>
+      </div>
+      <div class="shift-week">
+        {% for day in schedule_days %}
+        <article class="shift-day {% if day.date == today %}today{% endif %}">
+          <header>
+            <span>{{ day.date|date:"l" }}</span>
+            <strong>{{ day.date|date:"Y-m-d" }}</strong>
+          </header>
+          <div>
+            {% for assignment in day.assignments %}
+            <a class="shift-pill" href="/admin/hr/shiftassignment/{{ assignment.pk }}/change/">
+              <b>{{ assignment.employee.user.get_full_name|default:assignment.employee.user.email }}</b>
+              <span>{{ assignment.shift.name }}</span>
+              <small>{{ assignment.shift.start_time|time:"H:i" }} تا {{ assignment.shift.end_time|time:"H:i" }}</small>
+            </a>
+            {% empty %}
+            <p>شیفتی ثبت نشده است.</p>
+            {% endfor %}
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="manager-section">
+      <div class="manager-heading">
+        <div>
+          <span class="eyebrow">Active Assignments</span>
+          <h2>تخصیص‌های فعال</h2>
+        </div>
+        <a href="/admin/hr/shiftassignment/">مدیریت کامل</a>
+      </div>
+      <div class="compact-table">
+        {% for assignment in assignments %}
+        <a href="/admin/hr/shiftassignment/{{ assignment.pk }}/change/">
+          <span>{{ assignment.employee.user.get_full_name|default:assignment.employee.user.email }}</span>
+          <small>{{ assignment.shift.name }} / {{ assignment.weekdays_display }}</small>
+          <b>{{ assignment.start_date|date:"Y-m-d" }}</b>
+        </a>
+        {% empty %}
+        <div class="empty-state">هنوز تخصیص شیفت فعالی نداریم.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </section>
+</main>
+{% endblock %}

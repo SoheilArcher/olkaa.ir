@@ -688,6 +688,59 @@ footer {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
+.shift-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(160px, 1fr));
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.shift-day {
+  min-width: 160px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+.shift-day.today {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px rgba(195, 154, 77, .32);
+}
+.shift-day header {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.shift-day header span {
+  color: var(--navy);
+  font-weight: 900;
+}
+.shift-day header strong,
+.shift-day p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+}
+.shift-pill {
+  display: grid;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-right: 4px solid var(--gold);
+  border-radius: 6px;
+  color: var(--navy);
+  margin-top: 8px;
+  padding: 10px;
+}
+.shift-pill b {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.shift-pill span,
+.shift-pill small {
+  color: var(--muted);
+  font-size: 12px;
+}
 .monitor-item {
   display: grid;
   grid-template-columns: 1fr auto;

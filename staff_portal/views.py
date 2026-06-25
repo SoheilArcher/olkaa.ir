@@ -1,3 +1,4 @@
+from datetime import timedelta
 from urllib.parse import urlencode
 
 from django.contrib import messages
@@ -6,6 +7,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.core.mail import BadHeaderError
+from django.db import models
 from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -16,7 +18,7 @@ from django.utils import timezone
 from core.models import Role
 from accounting.models import Expense, Invoice
 from datacenter.models import PingCheck, PingTarget
-from hr.models import Attendance, EmployeeProfile, Payroll, StaffRegistrationRequest
+from hr.models import Attendance, EmployeeProfile, Payroll, ShiftAssignment, StaffRegistrationRequest
 from ticketing.models import Ticket, TicketReply
 
 from .forms import EmailOtpForm, RegistrationCodeForm, StaffRegistrationForm
@@ -54,6 +56,10 @@ ACCESS_PERMISSIONS = {
         ("hr", "view_attendance"),
         ("hr", "add_attendance"),
         ("hr", "change_attendance"),
+        ("hr", "view_shift"),
+        ("hr", "view_shiftassignment"),
+        ("hr", "add_shiftassignment"),
+        ("hr", "change_shiftassignment"),
     },
     "requested_payroll": {
         ("hr", "view_payroll"),
@@ -168,6 +174,12 @@ def dashboard(request):
             "status": "مرحله اول",
         },
         {
+            "title": "شیفت‌بندی",
+            "caption": "برنامه شیفت کارمندان، پشتیبانی شبکه و حضور عملیاتی",
+            "href": "/portal/shifts/",
+            "status": "فعال",
+        },
+        {
             "title": "تیکتینگ",
             "caption": "ارسال درخواست، ارجاع، اولویت‌بندی و پیگیری",
             "href": "/admin/ticketing/",
@@ -226,6 +238,37 @@ def email_otp(request):
 
 
 @user_passes_test(_is_staff_manager, login_url="/admin/login/")
+def shifts(request):
+    today = timezone.localdate()
+    days = [today + timedelta(days=offset) for offset in range(7)]
+    assignments = (
+        ShiftAssignment.objects.select_related("employee", "employee__user", "shift")
+        .filter(is_active=True, shift__is_active=True, start_date__lte=days[-1])
+        .filter(models.Q(end_date__isnull=True) | models.Q(end_date__gte=today))
+        .order_by("employee__department", "employee__personnel_code", "shift__start_time")
+    )
+
+    schedule_days = []
+    for day in days:
+        schedule_days.append(
+            {
+                "date": day,
+                "assignments": [assignment for assignment in assignments if assignment.applies_to(day)],
+            }
+        )
+
+    return render(
+        request,
+        "staff_portal/shifts.html",
+        {
+            "assignments": assignments[:24],
+            "schedule_days": schedule_days,
+            "today": today,
+        },
+    )
+
+
+@user_passes_test(_is_staff_manager, login_url="/admin/login/")
 def finance(request):
     invoices = Invoice.objects.select_related("party").order_by("-issue_date", "-created_at")
     expenses = Expense.objects.select_related("party", "bank_account").order_by("-date", "-created_at")
@@ -272,6 +315,13 @@ def live(request):
     attendance_today = Attendance.objects.filter(date=today).select_related("employee", "employee__user").order_by(
         "employee__personnel_code"
     )
+    active_shifts = (
+        ShiftAssignment.objects.select_related("employee", "employee__user", "shift")
+        .filter(is_active=True, shift__is_active=True, start_date__lte=today)
+        .filter(models.Q(end_date__isnull=True) | models.Q(end_date__gte=today))
+        .order_by("shift__start_time", "employee__personnel_code")
+    )
+    shifts_today = [assignment for assignment in active_shifts if assignment.applies_to(today)]
     recent_registrations = StaffRegistrationRequest.objects.select_related("user").order_by("-created_at")[:6]
     payroll_queue = Payroll.objects.exclude(status=Payroll.PAID).select_related("employee", "employee__user").order_by(
         "-period",
@@ -326,6 +376,7 @@ def live(request):
         {"label": "تیکت‌های باز", "value": Ticket.objects.exclude(status=Ticket.CLOSED).count(), "caption": "در جریان"},
         {"label": "تیکت‌های فوری", "value": urgent_tickets.count(), "caption": "اولویت بالا"},
         {"label": "حضور امروز", "value": attendance_today.count(), "caption": "رکورد ثبت شده"},
+        {"label": "شیفت امروز", "value": len(shifts_today), "caption": "نیروی برنامه‌ریزی‌شده"},
         {
             "label": "در انتظار تایید",
             "value": StaffRegistrationRequest.objects.filter(status=StaffRegistrationRequest.PENDING_APPROVAL).count(),
@@ -345,6 +396,7 @@ def live(request):
             "payroll_queue": payroll_queue,
             "recent_events": recent_events,
             "recent_registrations": recent_registrations,
+            "shifts_today": shifts_today[:10],
             "stats": stats,
         },
     )
@@ -396,6 +448,11 @@ def manager(request):
     payrolls = Payroll.objects.select_related("employee", "employee__user").order_by("-period", "-created_at")[:8]
     attendance_today = Attendance.objects.filter(date=timezone.localdate()).select_related("employee", "employee__user")[:8]
     monitoring_targets = PingTarget.objects.order_by("last_status", "name")[:12]
+    shift_assignments = (
+        ShiftAssignment.objects.select_related("employee", "employee__user", "shift")
+        .filter(is_active=True, shift__is_active=True)
+        .order_by("employee__department", "employee__personnel_code")[:12]
+    )
 
     stats = [
         {"label": "در انتظار تایید", "value": pending_requests.count(), "caption": "بعد از تایید ایمیل"},
@@ -412,6 +469,7 @@ def manager(request):
             "employees": employees,
             "payrolls": payrolls,
             "monitoring_targets": monitoring_targets,
+            "shift_assignments": shift_assignments,
             "pending_cards": pending_cards,
             "pending_requests": pending_requests,
             "recent_requests": recent_requests,
