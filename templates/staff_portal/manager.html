@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}مدیریت داخلی فاوا ایمن اُلکا{% endblock %}
+
+{% block body %}
+<main class="portal-shell">
+  <aside class="portal-side">
+    <a class="brand portal-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن اُلکا</span><span class="en">MANAGEMENT</span></span>
+    </a>
+    <nav>
+      <a href="/portal/">داشبورد</a>
+      <a href="/portal/manager/">مدیریت داخلی</a>
+      <a href="/admin/hr/staffregistrationrequest/">درخواست‌ها در ادمین</a>
+      <a href="/admin/hr/employeeprofile/">پرونده پرسنلی</a>
+      <a href="/admin/hr/payroll/">حقوق و دستمزد</a>
+      <a href="/admin/">Django admin</a>
+    </nav>
+  </aside>
+
+  <section class="portal-main">
+    <header class="portal-top">
+      <div>
+        <span class="eyebrow">Operations Control</span>
+        <h1>مرکز مدیریت کارمندان</h1>
+        <p>تایید ثبت‌نام، تعیین دسترسی‌ها، مرور کارمندان، حقوق و حضور و غیاب در یک صفحه.</p>
+      </div>
+      <a class="btn btn-gold" href="/portal/register/">ثبت‌نام کارمند</a>
+    </header>
+
+    {% if messages %}
+    <div class="portal-messages">
+      {% for message in messages %}
+      <div class="portal-message {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="manager-stats">
+      {% for item in stats %}
+      <article>
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+        <small>{{ item.caption }}</small>
+      </article>
+      {% endfor %}
+    </div>
+
+    <section class="manager-section">
+      <div class="manager-heading">
+        <div>
+          <span class="eyebrow">Approval Queue</span>
+          <h2>درخواست‌های آماده تایید</h2>
+        </div>
+        <a href="/admin/hr/staffregistrationrequest/">مشاهده کامل</a>
+      </div>
+
+      {% if pending_cards %}
+      <div class="request-list">
+        {% for card in pending_cards %}
+        {% with registration=card.registration %}
+        <form class="request-card" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="registration_id" value="{{ registration.pk }}">
+          <div class="request-main">
+            <div>
+              <strong>{{ registration.user.get_full_name|default:registration.user.email }}</strong>
+              <span>{{ registration.user.email }}</span>
+            </div>
+            <dl>
+              <div><dt>موبایل</dt><dd>{{ registration.mobile|default:"-" }}</dd></div>
+              <div><dt>کد ملی</dt><dd>{{ registration.national_id|default:"-" }}</dd></div>
+              <div><dt>واحد</dt><dd>{{ registration.requested_department|default:"-" }}</dd></div>
+              <div><dt>عنوان</dt><dd>{{ registration.requested_job_title|default:"-" }}</dd></div>
+            </dl>
+          </div>
+
+          <div class="access-grid">
+            {% for access in card.accesses %}
+            <label>
+              <input type="checkbox" name="{{ access.field }}" {% if access.checked %}checked{% endif %}>
+              <span>{{ access.label }}</span>
+            </label>
+            {% endfor %}
+          </div>
+
+          <label class="manager-note">
+            <span>یادداشت مدیر</span>
+            <input name="manager_note" value="{{ registration.manager_note }}" placeholder="اختیاری">
+          </label>
+
+          <div class="request-actions">
+            <button class="btn btn-gold" type="submit" name="action" value="approve">تایید و فعال‌سازی</button>
+            <button class="btn btn-ghost danger" type="submit" name="action" value="reject">رد درخواست</button>
+          </div>
+        </form>
+        {% endwith %}
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">درخواست آماده تایید نداریم.</div>
+      {% endif %}
+    </section>
+
+    <div class="manager-columns">
+      <section class="manager-section">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Employees</span>
+            <h2>کارمندان اخیر</h2>
+          </div>
+          <a href="/admin/hr/employeeprofile/add/">افزودن پرونده</a>
+        </div>
+        <div class="compact-table">
+          {% for employee in employees %}
+          <a href="/admin/hr/employeeprofile/{{ employee.pk }}/change/">
+            <span>{{ employee.user.get_full_name|default:employee.user.email }}</span>
+            <small>{{ employee.department|default:"-" }} / {{ employee.job_title|default:"-" }}</small>
+            <b>{{ employee.personnel_code }}</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">هنوز پرونده‌ای ثبت نشده است.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="manager-section">
+        <div class="manager-heading">
+          <div>
+            <span class="eyebrow">Payroll</span>
+            <h2>حقوق‌های اخیر</h2>
+          </div>
+          <a href="/admin/hr/payroll/add/">ثبت فیش</a>
+        </div>
+        <div class="compact-table">
+          {% for payroll in payrolls %}
+          <a href="/admin/hr/payroll/{{ payroll.pk }}/change/">
+            <span>{{ payroll.employee.user.get_full_name|default:payroll.employee.user.email }}</span>
+            <small>{{ payroll.period }} / {{ payroll.get_status_display }}</small>
+            <b>{{ payroll.net_pay_rial|floatformat:"0" }} ریال</b>
+          </a>
+          {% empty %}
+          <div class="empty-state">فیشی ثبت نشده است.</div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+
+    <section class="manager-section">
+      <div class="manager-heading">
+        <div>
+          <span class="eyebrow">Recent Flow</span>
+          <h2>آخرین ثبت‌نام‌ها</h2>
+        </div>
+        <a href="/admin/hr/staffregistrationrequest/">مدیریت کامل</a>
+      </div>
+      <div class="recent-flow">
+        {% for registration in recent_requests %}
+        <a href="/admin/hr/staffregistrationrequest/{{ registration.pk }}/change/">
+          <span>{{ registration.user.email }}</span>
+          <b>{{ registration.get_status_display }}</b>
+          <small>{{ registration.created_at|date:"Y-m-d H:i" }}</small>
+        </a>
+        {% empty %}
+        <div class="empty-state">ثبت‌نامی نداریم.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </section>
+</main>
+{% endblock %}

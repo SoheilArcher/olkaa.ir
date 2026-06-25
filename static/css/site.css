@@ -497,6 +497,201 @@ footer {
   font-weight: 800;
 }
 
+.portal-messages {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.portal-message {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-right: 4px solid var(--gold);
+  border-radius: 7px;
+  padding: 12px 14px;
+  font-weight: 750;
+}
+.portal-message.warning { border-right-color: #9c2f2f; }
+
+.manager-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.manager-stats article {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+}
+.manager-stats span,
+.manager-stats small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.manager-stats strong {
+  display: block;
+  color: var(--navy);
+  font-family: var(--en);
+  font-size: 34px;
+  line-height: 1.1;
+  margin: 8px 0;
+}
+
+.manager-section {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+.manager-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.manager-heading h2 {
+  font-size: 24px;
+  margin: 6px 0 0;
+}
+.manager-heading a {
+  color: var(--navy);
+  font-weight: 850;
+}
+.request-list {
+  display: grid;
+  gap: 14px;
+}
+.request-card {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.1fr) minmax(260px, .9fr);
+  gap: 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+}
+.request-main strong,
+.request-main span {
+  display: block;
+}
+.request-main strong {
+  color: var(--navy);
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.request-main span {
+  direction: ltr;
+  text-align: right;
+  color: var(--muted);
+  font-family: var(--en);
+}
+.request-main dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 0;
+}
+.request-main dt {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 850;
+}
+.request-main dd {
+  margin: 4px 0 0;
+  color: var(--navy);
+  font-weight: 750;
+}
+.access-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-content: start;
+}
+.access-grid label {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+  font-weight: 750;
+}
+.manager-note {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 8px;
+  font-weight: 800;
+}
+.manager-note input {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 11px;
+  font: inherit;
+}
+.request-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.btn.danger {
+  border-color: rgba(156, 47, 47, .35);
+  color: #9c2f2f;
+}
+.manager-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.compact-table,
+.recent-flow {
+  display: grid;
+  gap: 8px;
+}
+.compact-table a,
+.recent-flow a {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, .9fr) auto;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--navy);
+}
+.compact-table span,
+.recent-flow span {
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+.compact-table small,
+.recent-flow small {
+  color: var(--muted);
+}
+.compact-table b,
+.recent-flow b {
+  color: var(--gold);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.empty-state {
+  background: var(--panel);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  color: var(--muted);
+  font-weight: 750;
+}
+
 .auth-page {
   min-height: 100vh;
   display: grid;
@@ -656,6 +851,13 @@ footer {
   .portal-side { position: static; }
   .portal-grid { grid-template-columns: 1fr; }
   .portal-top { display: grid; }
+  .manager-stats,
+  .manager-columns,
+  .request-card { grid-template-columns: 1fr; }
+  .access-grid,
+  .request-main dl { grid-template-columns: 1fr; }
+  .compact-table a,
+  .recent-flow a { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .auth-panel { padding: 24px; }
 }
