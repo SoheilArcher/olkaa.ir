@@ -720,6 +720,13 @@ footer {
   font-style: normal;
   font-weight: 800;
 }
+.monitor-item i {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+}
 .empty-state {
   background: var(--panel);
   border: 1px dashed var(--line);

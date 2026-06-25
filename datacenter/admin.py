@@ -36,9 +36,31 @@ class IPLeaseAdmin(admin.ModelAdmin):
 
 @admin.register(PingTarget)
 class PingTargetAdmin(admin.ModelAdmin):
-    list_display = ("name", "host", "last_status", "last_latency_ms", "failure_count", "last_checked_at", "is_active")
-    list_filter = ("last_status", "is_active", "last_checked_at")
-    search_fields = ("name", "host", "note")
+    list_display = (
+        "name",
+        "host",
+        "target_type",
+        "environment",
+        "support_owner",
+        "last_status",
+        "last_latency_ms",
+        "failure_count",
+        "last_checked_at",
+        "is_active",
+    )
+    list_filter = ("last_status", "target_type", "environment", "is_active", "last_checked_at")
+    search_fields = ("name", "host", "support_owner", "support_hint", "note")
+    fieldsets = (
+        ("شناسه سرویس", {"fields": ("name", "host", "target_type", "environment", "is_active")}),
+        ("پشتیبانی", {"fields": ("support_owner", "support_hint", "note")}),
+        (
+            "آخرین وضعیت",
+            {
+                "fields": ("last_status", "last_latency_ms", "failure_count", "last_checked_at"),
+            },
+        ),
+    )
+    readonly_fields = ("last_status", "last_latency_ms", "failure_count", "last_checked_at")
     actions = ("run_ping_check",)
 
     @admin.action(description="اجرای پینگ برای سرویس‌های انتخابی")

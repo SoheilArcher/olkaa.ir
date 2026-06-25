@@ -107,9 +107,33 @@ class PingTarget(TimeStamped):
         (DOWN, "قطع"),
         (UNKNOWN, "نامشخص"),
     ]
+    WEBSITE = "website"
+    SERVER = "server"
+    MAIL = "mail"
+    NETWORK = "network"
+    OTHER = "other"
+    TARGET_TYPE_CHOICES = [
+        (WEBSITE, "سایت"),
+        (SERVER, "سرور"),
+        (MAIL, "ایمیل"),
+        (NETWORK, "شبکه"),
+        (OTHER, "سایر"),
+    ]
+    PRODUCTION = "production"
+    STAGING = "staging"
+    INTERNAL = "internal"
+    ENVIRONMENT_CHOICES = [
+        (PRODUCTION, "Production"),
+        (STAGING, "Staging"),
+        (INTERNAL, "Internal"),
+    ]
 
     name = models.CharField("نام سرویس", max_length=140)
     host = models.CharField("آدرس/IP", max_length=255, unique=True)
+    target_type = models.CharField("نوع", max_length=20, choices=TARGET_TYPE_CHOICES, default=SERVER)
+    environment = models.CharField("محیط", max_length=20, choices=ENVIRONMENT_CHOICES, default=PRODUCTION)
+    support_owner = models.CharField("مسئول/تیم پشتیبانی", max_length=120, blank=True)
+    support_hint = models.CharField("راهنمای اقدام هنگام قطعی", max_length=255, blank=True)
     is_active = models.BooleanField("فعال", default=True)
     last_status = models.CharField("آخرین وضعیت", max_length=10, choices=STATUS_CHOICES, default=UNKNOWN)
     last_latency_ms = models.PositiveIntegerField("آخرین تاخیر (ms)", null=True, blank=True)

@@ -165,7 +165,10 @@
           <span>{{ target.name }}</span>
           <b>{{ target.get_last_status_display }}</b>
           <small>{{ target.host }}</small>
+          <small>{{ target.get_target_type_display }} / {{ target.get_environment_display }}</small>
+          <small>{{ target.support_owner|default:"مسئول ثبت نشده" }}</small>
           <em>{% if target.last_latency_ms %}{{ target.last_latency_ms }}ms{% else %}-{% endif %}</em>
+          {% if target.support_hint %}<i>{{ target.support_hint }}</i>{% endif %}
         </a>
         {% empty %}
         <div class="empty-state">هنوز سروری برای پینگ ثبت نشده است.</div>
