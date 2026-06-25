@@ -3,7 +3,7 @@
 Version: v1.0.0  
 Status: Initial documentation system
 
-This repository is the official enterprise documentation system for Fava Imen Olka. It contains the company brand book, product documentation, architecture standards, design system, software standards, security standards, GitHub standards, roadmap, and company profile.
+This repository is the official enterprise documentation system for Fava Imen Olka. It contains the company brand book, product documentation, architecture standards, design system, software standards, security standards, GitHub standards, roadmap, company profile, engineering knowledge base, decisions, lessons learned, research, innovation records, and architecture decision records.
 
 ## Repository Rules
 
@@ -27,6 +27,18 @@ This repository is the official enterprise documentation system for Fava Imen Ol
 - [Roadmap](roadmap/company-roadmap.md)
 - [Sales](sales/company-profile.md)
 - [Security](security/security-standards.md)
+- [Engineering Knowledge Base](knowledge/README.md)
+- [Decisions](decisions/README.md)
+- [Architecture Decision Records](adr/README.md)
+- [Lessons Learned](lessons/README.md)
+- [Research](research/README.md)
+- [Innovation](innovation/README.md)
+
+## Organizational Memory
+
+The `decisions/`, `adr/`, `lessons/`, `research/`, `innovation/`, and `knowledge/` folders form the organizational memory of Fava Imen Olka.
+
+Use these folders to preserve important business decisions, engineering decisions, architecture decisions, project lessons, research findings, future ideas, and technical knowledge. Historical knowledge should not be deleted. When information changes, improve the existing document, add a dated update, or create a new numbered record when the topic is materially new.
 
 ## Status Model
 
