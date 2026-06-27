@@ -12,6 +12,7 @@ The standards folder defines how company software, repositories, documentation, 
 ## Standards
 
 - [Coding Standards](coding-standards.md)
+- [Enterprise Development Rules](enterprise-development-rules.md)
 - [Architecture Principles](architecture-principles.md)
 - [Repository Standards](repository-standards.md)
 - [Documentation Standards](documentation-standards.md)
