@@ -2,7 +2,7 @@ from datetime import timedelta
 from urllib.parse import urlencode
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
@@ -23,81 +23,11 @@ from ticketing.models import Ticket, TicketReply
 
 from .forms import EmailOtpForm, RegistrationCodeForm, StaffRegistrationForm
 from .security import ensure_otp_challenge, verify_otp_code, OTP_LAST_ERROR
+from .access import ACCESS_FIELDS, ACCESS_PERMISSIONS, staff_module_required, user_can_access_module
+from .throttle import ThrottleBlocked, check_throttle, register_attempt, reset_attempts
 
 
 signer = TimestampSigner(salt="staff-registration")
-
-
-ACCESS_FIELDS = [
-    ("requested_finance", "مالی", "finance-operator", "کارشناس مالی"),
-    ("requested_hr", "منابع انسانی", "hr-operator", "منابع انسانی"),
-    ("requested_attendance", "حضور و غیاب", "attendance-operator", "حضور و غیاب"),
-    ("requested_payroll", "حقوق و دستمزد", "payroll-operator", "حقوق و دستمزد"),
-    ("requested_ticketing", "تیکتینگ", "ticket-operator", "تیکتینگ"),
-    ("requested_datacenter", "دیتاسنتر", "datacenter-operator", "کارشناس دیتاسنتر"),
-    ("requested_user_manager", "مدیریت کاربران", "user-manager", "مدیریت کاربران"),
-]
-
-ACCESS_PERMISSIONS = {
-    "requested_finance": {
-        ("accounting", "view_account"),
-        ("accounting", "view_voucher"),
-        ("accounting", "change_voucher"),
-        ("core", "view_payment"),
-        ("core", "change_payment"),
-        ("core", "view_party"),
-    },
-    "requested_hr": {
-        ("hr", "view_employeeprofile"),
-        ("hr", "change_employeeprofile"),
-        ("hr", "view_staffregistrationrequest"),
-    },
-    "requested_attendance": {
-        ("hr", "view_attendance"),
-        ("hr", "add_attendance"),
-        ("hr", "change_attendance"),
-        ("hr", "view_shift"),
-        ("hr", "view_shiftassignment"),
-        ("hr", "add_shiftassignment"),
-        ("hr", "change_shiftassignment"),
-    },
-    "requested_payroll": {
-        ("hr", "view_payroll"),
-        ("hr", "add_payroll"),
-        ("hr", "change_payroll"),
-    },
-    "requested_ticketing": {
-        ("ticketing", "view_ticket"),
-        ("ticketing", "add_ticket"),
-        ("ticketing", "change_ticket"),
-        ("ticketing", "view_ticketreply"),
-        ("ticketing", "add_ticketreply"),
-        ("ticketing", "change_ticketreply"),
-    },
-    "requested_datacenter": {
-        ("datacenter", "view_serviceplan"),
-        ("datacenter", "view_subscription"),
-        ("datacenter", "change_subscription"),
-        ("datacenter", "view_ipblock"),
-        ("datacenter", "view_iplease"),
-        ("datacenter", "view_pingtarget"),
-        ("datacenter", "add_pingtarget"),
-        ("datacenter", "change_pingtarget"),
-        ("datacenter", "view_pingcheck"),
-    },
-    "requested_user_manager": {
-        ("core", "view_user"),
-        ("core", "change_user"),
-        ("core", "view_role"),
-        ("core", "change_role"),
-        ("hr", "view_staffregistrationrequest"),
-        ("hr", "change_staffregistrationrequest"),
-    },
-}
-
-
-def _is_staff_manager(user):
-    return user.is_authenticated and user.is_staff
 
 
 def _safe_next(request):
@@ -154,55 +84,68 @@ def _approve_registration(registration, approver):
 
 @login_required
 def dashboard(request):
-    modules = [
+    module_cards = [
         {
             "title": "اتاق کنترل زنده",
             "caption": "مانیتورینگ، تیکت‌ها، حضور امروز و رخدادهای جاری",
             "href": "/portal/live/",
             "status": "زنده",
+            "modules": ("ticketing", "datacenter", "attendance", "management"),
         },
         {
             "title": "واحد مالی",
             "caption": "فاکتورها، هزینه‌ها، پرداخت‌ها و گزارش سریع",
             "href": "/portal/finance/",
             "status": "فعال",
+            "modules": ("finance",),
         },
         {
             "title": "منابع انسانی",
             "caption": "پرونده پرسنلی، حضور و غیاب، مرخصی و حقوق",
             "href": "/admin/hr/",
             "status": "مرحله اول",
+            "modules": ("hr",),
         },
         {
             "title": "شیفت‌بندی",
             "caption": "برنامه شیفت کارمندان، پشتیبانی شبکه و حضور عملیاتی",
             "href": "/portal/shifts/",
             "status": "فعال",
+            "modules": ("attendance", "hr"),
         },
         {
             "title": "تیکتینگ",
             "caption": "ارسال درخواست، ارجاع، اولویت‌بندی و پیگیری",
             "href": "/admin/ticketing/",
             "status": "مرحله اول",
+            "modules": ("ticketing",),
         },
         {
             "title": "دیتاسنتر",
             "caption": "پلن‌ها، اشتراک‌ها، بلوک‌های IP و اجاره IP",
             "href": "/admin/datacenter/",
             "status": "مرحله اول",
+            "modules": ("datacenter",),
         },
         {
             "title": "مدیریت کاربران",
             "caption": "تایید کارمندان، نقش‌ها و دسترسی‌های داخلی",
             "href": "/portal/manager/",
             "status": "فعال",
+            "modules": ("management",),
         },
         {
             "title": "ثبت‌نام کارمند",
             "caption": "فرم عضویت، تایید ایمیل و فعال‌سازی توسط مدیر",
             "href": "/portal/register/",
             "status": "عمومی",
+            "modules": (),
         },
+    ]
+    modules = [
+        {key: value for key, value in module.items() if key != "modules"}
+        for module in module_cards
+        if not module["modules"] or any(user_can_access_module(request.user, item) for item in module["modules"])
     ]
     return render(request, "staff_portal/dashboard.html", {"modules": modules})
 
@@ -211,6 +154,11 @@ def dashboard(request):
 def email_otp(request):
     next_url = _safe_next(request)
     if request.method == "POST" and request.POST.get("action") == "resend":
+        try:
+            register_attempt("otp_resend", request, str(request.user.pk))
+        except ThrottleBlocked as exc:
+            messages.error(request, str(exc))
+            return redirect(f"{reverse('staff_portal:email_otp')}?{urlencode({'next': next_url})}")
         ensure_otp_challenge(request, force=True)
         messages.success(request, "کد جدید ارسال شد.")
         return redirect(f"{reverse('staff_portal:email_otp')}?{urlencode({'next': next_url})}")
@@ -218,9 +166,24 @@ def email_otp(request):
     if request.method == "POST":
         form = EmailOtpForm(request.POST)
         if form.is_valid():
+            try:
+                check_throttle("otp", request, str(request.user.pk))
+            except ThrottleBlocked as exc:
+                form.add_error("code", str(exc))
+                return render(
+                    request,
+                    "staff_portal/email_otp.html",
+                    {
+                        "form": form,
+                        "next_url": next_url,
+                        "email_error": request.session.get(OTP_LAST_ERROR, ""),
+                    },
+                )
             ok, error = verify_otp_code(request, form.cleaned_data["code"])
             if ok:
+                reset_attempts("otp", request, str(request.user.pk))
                 return redirect(next_url)
+            register_attempt("otp", request, str(request.user.pk))
             form.add_error("code", error)
     else:
         ensure_otp_challenge(request)
@@ -237,7 +200,7 @@ def email_otp(request):
     )
 
 
-@user_passes_test(_is_staff_manager, login_url="/admin/login/")
+@staff_module_required("attendance", "hr")
 def shifts(request):
     today = timezone.localdate()
     days = [today + timedelta(days=offset) for offset in range(7)]
@@ -268,7 +231,7 @@ def shifts(request):
     )
 
 
-@user_passes_test(_is_staff_manager, login_url="/admin/login/")
+@staff_module_required("finance")
 def finance(request):
     invoices = Invoice.objects.select_related("party").order_by("-issue_date", "-created_at")
     expenses = Expense.objects.select_related("party", "bank_account").order_by("-date", "-created_at")
@@ -301,7 +264,7 @@ def finance(request):
     )
 
 
-@user_passes_test(_is_staff_manager, login_url="/admin/login/")
+@staff_module_required("ticketing", "datacenter", "attendance", "management")
 def live(request):
     now = timezone.localtime()
     today = timezone.localdate()
@@ -402,7 +365,7 @@ def live(request):
     )
 
 
-@user_passes_test(_is_staff_manager, login_url="/admin/login/")
+@staff_module_required("management")
 def manager(request):
     if request.method == "POST":
         registration = get_object_or_404(
@@ -482,16 +445,30 @@ def register(request):
     if not request.session.get("staff_registration_unlocked"):
         if request.method == "POST":
             code_form = RegistrationCodeForm(request.POST)
+            try:
+                check_throttle("registration", request, "gate")
+            except ThrottleBlocked as exc:
+                code_form.add_error("registration_code", str(exc))
+                return render(request, "staff_portal/register_gate.html", {"form": code_form})
             if code_form.is_valid():
+                reset_attempts("registration", request, "gate")
                 request.session["staff_registration_unlocked"] = True
                 return redirect("staff_portal:register")
+            register_attempt("registration", request, "gate")
         else:
             code_form = RegistrationCodeForm()
         return render(request, "staff_portal/register_gate.html", {"form": code_form})
 
     if request.method == "POST":
         form = StaffRegistrationForm(request.POST)
+        identifier = request.POST.get("email", "")
+        try:
+            check_throttle("registration", request, identifier)
+        except ThrottleBlocked as exc:
+            form.add_error(None, str(exc))
+            return render(request, "staff_portal/register.html", {"form": form})
         if form.is_valid():
+            reset_attempts("registration", request, identifier)
             registration = form.save()
             token = signer.sign(registration.pk)
             verify_url = request.build_absolute_uri(
@@ -519,6 +496,7 @@ def register(request):
                 "staff_portal/register_done.html",
                 {"registration": registration, "verify_url": verify_url, "email_sent": email_sent},
             )
+        register_attempt("registration", request, identifier)
     else:
         form = StaffRegistrationForm()
     return render(request, "staff_portal/register.html", {"form": form})

@@ -6,6 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
 from hr.models import StaffRegistrationRequest
+from .throttle import ThrottleBlocked, check_throttle, register_attempt, reset_attempts
 
 
 class RegistrationCodeForm(forms.Form):
@@ -43,6 +44,25 @@ class EmailOtpForm(forms.Form):
 class StaffLoginForm(AuthenticationForm):
     username = forms.CharField(label="ایمیل یا نام کاربری")
     password = forms.CharField(label="رمز عبور", strip=False, widget=forms.PasswordInput)
+
+    def clean(self):
+        username = self.cleaned_data.get("username", "")
+        if self.request:
+            try:
+                check_throttle("login", self.request, username)
+            except ThrottleBlocked as exc:
+                raise ValidationError(str(exc)) from exc
+
+        try:
+            cleaned = super().clean()
+        except ValidationError:
+            if self.request:
+                register_attempt("login", self.request, username)
+            raise
+
+        if self.request:
+            reset_attempts("login", self.request, username)
+        return cleaned
 
 
 class StaffRegistrationForm(forms.Form):

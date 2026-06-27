@@ -7,6 +7,8 @@
 from pathlib import Path
 import os
 
+from .env import env_bool, env_int, env_list, validate_production_environment
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -16,18 +18,16 @@ except Exception:
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-def env_bool(key, default=False):
-    return os.environ.get(key, str(default)).lower() in ("1", "true", "yes", "on")
-
-
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-insecure-change-me")
-DEBUG = env_bool("DEBUG", True)
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
-    if origin.strip()
-]
+DEBUG = env_bool(os.environ, "DEBUG", True)
+ALLOWED_HOSTS = env_list(os.environ, "ALLOWED_HOSTS", "*" if DEBUG else "")
+CSRF_TRUSTED_ORIGINS = env_list(os.environ, "CSRF_TRUSTED_ORIGINS")
+validate_production_environment(
+    os.environ,
+    debug=DEBUG,
+    secret_key=SECRET_KEY,
+    allowed_hosts=ALLOWED_HOSTS,
+)
 
 INSTALLED_APPS = [
     "unfold",
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "staff_portal.headers.SecurityHeadersMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -131,13 +132,51 @@ EMAIL_HOST = os.environ.get("EMAIL_HOST", "mail.cipikia.co")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
-EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", False)
+EMAIL_USE_TLS = env_bool(os.environ, "EMAIL_USE_TLS", True)
+EMAIL_USE_SSL = env_bool(os.environ, "EMAIL_USE_SSL", False)
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "admin@olkaa.ir")
 STAFF_REGISTRATION_CODE = os.environ.get("STAFF_REGISTRATION_CODE", "")
 MONITORING_ALERT_EMAILS = os.environ.get("MONITORING_ALERT_EMAILS", DEFAULT_FROM_EMAIL)
-EMAIL_OTP_ENABLED = env_bool("EMAIL_OTP_ENABLED", True)
+EMAIL_OTP_ENABLED = env_bool(os.environ, "EMAIL_OTP_ENABLED", True)
 EMAIL_OTP_EXPIRE_MINUTES = int(os.environ.get("EMAIL_OTP_EXPIRE_MINUTES", "10"))
+STAFF_PORTAL_THROTTLE_LIMITS = {
+    "default": (
+        env_int(os.environ, "STAFF_THROTTLE_DEFAULT_LIMIT", 10),
+        env_int(os.environ, "STAFF_THROTTLE_DEFAULT_WINDOW", 300),
+    ),
+    "login": (
+        env_int(os.environ, "STAFF_LOGIN_THROTTLE_LIMIT", 5),
+        env_int(os.environ, "STAFF_LOGIN_THROTTLE_WINDOW", 300),
+    ),
+    "otp": (
+        env_int(os.environ, "STAFF_OTP_THROTTLE_LIMIT", 5),
+        env_int(os.environ, "STAFF_OTP_THROTTLE_WINDOW", 300),
+    ),
+    "otp_resend": (
+        env_int(os.environ, "STAFF_OTP_RESEND_THROTTLE_LIMIT", 3),
+        env_int(os.environ, "STAFF_OTP_RESEND_THROTTLE_WINDOW", 300),
+    ),
+    "registration": (
+        env_int(os.environ, "STAFF_REGISTRATION_THROTTLE_LIMIT", 5),
+        env_int(os.environ, "STAFF_REGISTRATION_THROTTLE_WINDOW", 300),
+    ),
+}
+
+SECURE_SSL_REDIRECT = env_bool(os.environ, "SECURE_SSL_REDIRECT", False)
+SESSION_COOKIE_SECURE = env_bool(os.environ, "SESSION_COOKIE_SECURE", False)
+CSRF_COOKIE_SECURE = env_bool(os.environ, "CSRF_COOKIE_SECURE", False)
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = env_bool(os.environ, "CSRF_COOKIE_HTTPONLY", False)
+SECURE_HSTS_SECONDS = env_int(os.environ, "SECURE_HSTS_SECONDS", 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(os.environ, "SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+SECURE_HSTS_PRELOAD = env_bool(os.environ, "SECURE_HSTS_PRELOAD", False)
+X_FRAME_OPTIONS = os.environ.get("X_FRAME_OPTIONS", "DENY")
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = os.environ.get("SECURE_REFERRER_POLICY", "strict-origin-when-cross-origin")
+CONTENT_SECURITY_POLICY_REPORT_ONLY = os.environ.get(
+    "CONTENT_SECURITY_POLICY_REPORT_ONLY",
+    "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'",
+)
 
 # ----- ظاهر پنل مدیریت (Unfold) -----
 UNFOLD = {

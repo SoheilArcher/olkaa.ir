@@ -16,3 +16,23 @@ This folder stores engineering knowledge related to security controls, access co
 - Incident response notes.
 - Hardening and monitoring guides.
 - Lessons learned from security reviews and incidents.
+
+## Current Hardening Notes
+
+Sprint 1 established the first production hardening baseline:
+
+- Production startup validation rejects insecure secrets and unsafe host settings.
+- Staff portal authorization is centralized by module.
+- Sensitive portal views require module-level access, not only staff status.
+- Login, OTP verification, OTP resend, and registration use cache-based throttling.
+- Security headers are applied conservatively.
+- CSP is report-only first to avoid breaking the current frontend.
+
+## Remaining Knowledge Gaps
+
+- Incident response runbook.
+- Backup and restore runbook.
+- Production deployment checklist.
+- Access review procedure.
+- Audit logging requirements for finance, payroll, HR, and user management.
+- Data retention policy for monitoring checks and authentication events.
