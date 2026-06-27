@@ -93,6 +93,7 @@
           <a href="{{ url }}" {% if code == lang %}class="active"{% endif %}>{{ code|upper }}</a>
         {% endfor %}
       </div>
+      <a href="/portal/login/" class="btn btn-gold">{{ content.login_label }}</a>
       <a href="/portal/register/" class="btn btn-ghost">{{ content.employee }}</a>
       <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">☰</button>
     </div>

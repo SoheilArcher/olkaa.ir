@@ -156,6 +156,38 @@ header.nav {
   max-width: 56ch;
   margin-top: 22px;
 }
+html[lang="en"] .hero h1,
+html[lang="ar"] .hero h1 {
+  font-size: clamp(31px, 3.6vw, 46px);
+  line-height: 1.2;
+  max-width: 20ch;
+}
+html[lang="en"] .hero .lead,
+html[lang="ar"] .hero .lead {
+  font-size: clamp(15px, 1.25vw, 17px);
+  max-width: 62ch;
+}
+html[lang="en"] .section-title h2,
+html[lang="en"] .split h2,
+html[lang="en"] .signature h2,
+html[lang="en"] .contact h2,
+html[lang="ar"] .section-title h2,
+html[lang="ar"] .split h2,
+html[lang="ar"] .signature h2,
+html[lang="ar"] .contact h2 {
+  font-size: clamp(25px, 3.2vw, 38px);
+  line-height: 1.24;
+}
+html[lang="en"] .section-title p,
+html[lang="en"] .split p,
+html[lang="en"] .signature p,
+html[lang="en"] .contact p,
+html[lang="ar"] .section-title p,
+html[lang="ar"] .split p,
+html[lang="ar"] .signature p,
+html[lang="ar"] .contact p {
+  font-size: 15px;
+}
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 .meta { display: flex; flex-wrap: wrap; gap: 26px; margin-top: 38px; }
 .meta small { display: block; color: var(--steel); font-family: var(--en); font-size: 10px; letter-spacing: 2px; margin-bottom: 4px; }
@@ -1297,6 +1329,19 @@ footer {
   color: var(--muted);
   font-weight: 750;
 }
+.auth-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+.auth-links a {
+  color: var(--navy);
+  font-weight: 850;
+}
+.auth-links a:hover {
+  color: var(--gold);
+}
 .dev-link {
   margin: 22px 0;
   padding: 14px;
@@ -1369,6 +1414,8 @@ footer {
   }
   .links.open { display: grid; gap: 16px; }
   .hero h1 { max-width: none; font-size: clamp(31px, 10vw, 44px); }
+  html[lang="en"] .hero h1,
+  html[lang="ar"] .hero h1 { font-size: clamp(28px, 8vw, 38px); }
   section { padding: 64px 0; }
   .solution-grid,
   .client-grid,

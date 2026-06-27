@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}ورود کارمندان | فاوا ایمن الکا{% endblock %}
+
+{% block body %}
+<main class="auth-page">
+  <section class="auth-panel auth-panel-narrow">
+    <a class="brand auth-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">STAFF LOGIN</span></span>
+    </a>
+    <span class="eyebrow">Secure staff access</span>
+    <h1>ورود کارمندان</h1>
+    <p>با ایمیل یا نام کاربری وارد شوید. بعد از تایید رمز عبور، کد یک‌بارمصرف به ایمیل شما ارسال می‌شود.</p>
+
+    {% if form.non_field_errors %}
+    <p class="form-note form-note-danger">{{ form.non_field_errors|striptags }}</p>
+    {% endif %}
+
+    <form class="auth-form" method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="form-grid form-grid-one">
+        {% for field in form %}
+        <label>
+          <span>{{ field.label }}</span>
+          {{ field }}
+          {% if field.errors %}<small>{{ field.errors|striptags }}</small>{% endif %}
+        </label>
+        {% endfor %}
+      </div>
+      <button class="btn btn-gold" type="submit">ورود امن</button>
+    </form>
+
+    <div class="auth-links">
+      <a href="/portal/register/">ثبت‌نام کارمند جدید</a>
+      <a href="/">بازگشت به سایت</a>
+    </div>
+  </section>
+</main>
+{% endblock %}

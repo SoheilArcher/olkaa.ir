@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -37,6 +38,11 @@ class EmailOtpForm(forms.Form):
         if len(code) != 6:
             raise ValidationError("کد ورود باید ۶ رقم باشد.")
         return code
+
+
+class StaffLoginForm(AuthenticationForm):
+    username = forms.CharField(label="ایمیل یا نام کاربری")
+    password = forms.CharField(label="رمز عبور", strip=False, widget=forms.PasswordInput)
 
 
 class StaffRegistrationForm(forms.Form):

@@ -12,6 +12,8 @@ class EmailOtpMiddleware:
     exempt_prefixes = (
         "/admin/login/",
         "/admin/logout/",
+        "/portal/login/",
+        "/portal/logout/",
         "/portal/otp/",
         "/portal/register/",
         "/portal/verify/",
