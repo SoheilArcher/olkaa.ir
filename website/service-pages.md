@@ -14,6 +14,7 @@ The service pages help search engines and customers understand Fava Imen Olka's 
 - `/services/aviation-software/` — Aviation software and airport operations systems.
 - `/services/datacenter/` — Datacenter, network, monitoring, and infrastructure services.
 - `/services/ipv4-leasing/` — IPv4 leasing and IP management.
+- `/services/ai-call-center/` — Planned AI-assisted call center and customer-service workflow.
 - `/services/home-check-in/` — Home Check-in passenger-service workflow.
 - `/services/cip-express/` — CIP Express airport hospitality workflow.
 

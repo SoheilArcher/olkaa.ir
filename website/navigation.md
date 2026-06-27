@@ -35,6 +35,7 @@ Purpose: Define the primary navigation model for olkaa.ir.
 - Linux Servers
 - Cloud
 - AI Solutions
+- AI Call Center
 - Network Engineering
 
 ## Footer Navigation
