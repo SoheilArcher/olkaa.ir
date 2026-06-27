@@ -33,12 +33,17 @@ This repository is the official enterprise documentation system for Fava Imen Ol
 - [Lessons Learned](lessons/README.md)
 - [Research](research/README.md)
 - [Innovation](innovation/README.md)
+- [Chat-to-Project Sync Protocol](sync/README.md)
 
 ## Organizational Memory
 
 The `decisions/`, `adr/`, `lessons/`, `research/`, `innovation/`, and `knowledge/` folders form the organizational memory of Fava Imen Olka.
 
 Use these folders to preserve important business decisions, engineering decisions, architecture decisions, project lessons, research findings, future ideas, and technical knowledge. Historical knowledge should not be deleted. When information changes, improve the existing document, add a dated update, or create a new numbered record when the topic is materially new.
+
+## Chat-to-Project Sync Protocol
+
+Chat conversations are not the source of truth. Repository documentation is the source of truth. Any important decision, architecture change, product direction, roadmap update, brand decision, business rule, or technical lesson discussed outside the repository must be summarized, added to the appropriate repository documentation, and committed without storing private or sensitive chat content.
 
 ## Status Model
 
