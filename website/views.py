@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
@@ -107,14 +107,102 @@ ABOUT_CONTENT = {
     ],
 }
 
+SERVICE_PAGES = {
+    "aviation-software": {
+        "title": "نرم افزار هوانوردی | فاوا ایمن الکا",
+        "description": "صفحه معرفی راهکارهای نرم افزار هوانوردی فاوا ایمن الکا برای فرایندهای عملیاتی، مسافری، گزارش گیری و هماهنگی سازمان های فرودگاهی و هوانوردی.",
+        "eyebrow": "Aviation Software",
+        "headline": "نرم افزار هوانوردی برای عملیات دقیق، سریع و قابل پیگیری",
+        "lead": "فاوا ایمن الکا راهکارهای نرم افزاری مرتبط با عملیات هوانوردی، خدمات مسافر، گزارش گیری، هماهنگی واحدها و کنترل فرایندهای عملیاتی را بر اساس نیاز سازمان طراحی و توسعه می دهد.",
+        "status": "In Development",
+        "keywords": ["نرم افزار هوانوردی", "سامانه فرودگاهی", "Airport ERP", "خدمات مسافر", "عملیات فرودگاهی"],
+        "audience": ["فرودگاه ها", "شرکت های خدمات فرودگاهی", "مجموعه های تشریفات", "واحدهای عملیات و گزارش گیری"],
+        "features": [
+            "مدیریت فرایندهای عملیاتی و هماهنگی واحدها",
+            "ثبت، پیگیری و گزارش گیری از خدمات مسافر",
+            "زیرساخت قابل توسعه برای اتصال به ماژول های مالی، CRM و تیکتینگ",
+            "طراحی متناسب با نیاز سازمان و سطح دسترسی کاربران",
+        ],
+        "related": ["cip-express", "home-check-in"],
+    },
+    "datacenter": {
+        "title": "خدمات دیتاسنتر و شبکه | فاوا ایمن الکا",
+        "description": "خدمات دیتاسنتر فاوا ایمن الکا شامل زیرساخت شبکه، اینترنت اختصاصی، مانیتورینگ، پشتیبانی سرویس و مدیریت عملیات برای سازمان ها است.",
+        "eyebrow": "Datacenter Services",
+        "headline": "خدمات دیتاسنتر و شبکه برای سرویس های پایدار سازمانی",
+        "lead": "زیرساخت شبکه و دیتاسنتر باید قابل مشاهده، قابل پیگیری و قابل پشتیبانی باشد. فاوا ایمن الکا خدمات زیرساختی را با تمرکز بر پایداری، مانیتورینگ و پاسخگویی عملیاتی ارائه می کند.",
+        "status": "Production",
+        "keywords": ["خدمات دیتاسنتر", "اینترنت اختصاصی", "مانیتورینگ سرور", "پشتیبانی شبکه", "دیتاسنتر سازمانی"],
+        "audience": ["سازمان ها", "شرکت های فناوری", "مجموعه های دارای سرویس آنلاین", "تیم های شبکه و زیرساخت"],
+        "features": [
+            "اینترنت اختصاصی و سرویس های ارتباطی سازمانی",
+            "مانیتورینگ اولیه سرورها و سرویس های حیاتی",
+            "ثبت مسئول پشتیبانی و راهنمای اقدام برای هر سرویس",
+            "قابلیت توسعه به گزارش گیری، هشدار و کنترل عملیات شبکه",
+        ],
+        "related": ["ipv4-leasing", "aviation-software"],
+    },
+    "ipv4-leasing": {
+        "title": "اجاره IPv4 و مدیریت IP | فاوا ایمن الکا",
+        "description": "معرفی خدمات اجاره IPv4 و مدیریت IP فاوا ایمن الکا برای سازمان هایی که به آدرس IP، پیگیری، ثبت و پشتیبانی شبکه نیاز دارند.",
+        "eyebrow": "IPv4 Leasing",
+        "headline": "اجاره IPv4 با مدیریت، ثبت و پشتیبانی عملیاتی",
+        "lead": "فاوا ایمن الکا سرویس اجاره و مدیریت IP را به عنوان بخشی از خدمات زیرساختی و دیتاسنتر ارائه می کند تا استفاده از منابع شبکه قابل پیگیری و قابل مدیریت باشد.",
+        "status": "Production",
+        "keywords": ["اجاره IPv4", "اجاره IP", "IPv4 Leasing", "مدیریت IP", "IP سازمانی"],
+        "audience": ["ارائه دهندگان سرویس", "شرکت های زیرساخت", "سازمان های دارای سرویس آنلاین", "تیم های شبکه"],
+        "features": [
+            "مدیریت بلوک های IP و وضعیت تخصیص",
+            "ثبت اطلاعات سرویس، مشتری و دوره استفاده",
+            "قابلیت اتصال به مالی و قراردادها در پورتال داخلی",
+            "پشتیبانی عملیاتی برای پیگیری سرویس و منابع شبکه",
+        ],
+        "related": ["datacenter"],
+    },
+    "home-check-in": {
+        "title": "Home Check-in | پذیرش مسافر در محل | فاوا ایمن الکا",
+        "description": "Home Check-in فاوا ایمن الکا سرویس پذیرش مسافر در منزل یا هتل، هماهنگی بار، ترانسفر و اتصال به تشریفات فرودگاهی را معرفی می کند.",
+        "eyebrow": "Home Check-in",
+        "headline": "Home Check-in برای تجربه مسافر بدون صف و اصطکاک عملیاتی",
+        "lead": "Home Check-in بخشی از سرویس های مسافری فاوا ایمن الکا است که فرایند پذیرش، هماهنگی بار، ترانسفر و اتصال به خدمات فرودگاهی را از محل مسافر تا فرودگاه منظم می کند.",
+        "status": "In Development",
+        "keywords": ["Home Check-in", "پذیرش در منزل", "پذیرش مسافر", "خدمات فرودگاهی", "CIP"],
+        "audience": ["مسافران ویژه", "آژانس ها", "هتل ها", "شرکت های خدمات فرودگاهی"],
+        "features": [
+            "ثبت درخواست پذیرش در محل",
+            "هماهنگی زمان، بار و اطلاعات مسافر",
+            "اتصال به فرایند تشریفات و ترانسفر اختصاصی",
+            "قابلیت توسعه به پنل مشتری، پرداخت و گزارش عملیاتی",
+        ],
+        "related": ["cip-express", "aviation-software"],
+    },
+    "cip-express": {
+        "title": "CIP Express | خدمات تشریفات فرودگاهی | فاوا ایمن الکا",
+        "description": "CIP Express فاوا ایمن الکا سرویس تشریفات فرودگاهی، Fast Track، لانژ اختصاصی، هماهنگی مسافر و تجربه سفر سازمان یافته را معرفی می کند.",
+        "eyebrow": "CIP Express",
+        "headline": "CIP Express برای تشریفات فرودگاهی منظم و قابل پیگیری",
+        "lead": "CIP Express با هدف کاهش اصطکاک سفر و هماهنگی بهتر خدمات فرودگاهی طراحی شده است؛ از پذیرش و Fast Track تا لانژ، ترانسفر و بدرقه مسافر.",
+        "status": "In Development",
+        "keywords": ["CIP Express", "خدمات CIP", "تشریفات فرودگاهی", "Fast Track", "لانژ اختصاصی"],
+        "audience": ["مسافران تجاری", "شرکت ها", "آژانس های گردشگری", "مجموعه های فرودگاهی"],
+        "features": [
+            "هماهنگی فرایند تشریفات و خدمات مسافر",
+            "پشتیبانی از Fast Track و لانژ اختصاصی",
+            "ثبت و پیگیری درخواست ها در ساختار عملیاتی",
+            "قابلیت اتصال به Home Check-in و سامانه های مالی/CRM",
+        ],
+        "related": ["home-check-in", "aviation-software"],
+    },
+}
+
 COMMON = {
     "sections": ["solutions", "signature", "datacenter", "clients", "offices", "contact"],
     "meta": [("DOMAIN", "olkaa.ir"), ("OFFICES", None), ("IPV4 POOL", "64,000")],
     "solutions": [
-        ("AVIATION", {"fa": "نرم افزار هوانوردی", "en": "Aviation software", "ar": "برمجيات الطيران"}),
-        ("ACCOUNTING", {"fa": "نرم افزار حسابداری", "en": "Accounting software", "ar": "برمجيات المحاسبة"}),
-        ("RMS", {"fa": "سامانه مدیریت درآمد", "en": "Revenue management", "ar": "إدارة الإيرادات"}),
-        ("HOSPITALITY", {"fa": "نرم افزار هتل داری", "en": "Hospitality software", "ar": "برمجيات الفنادق"}),
+        ("AVIATION", {"fa": "نرم افزار هوانوردی", "en": "Aviation software", "ar": "برمجيات الطيران"}, "aviation-software"),
+        ("DATACENTER", {"fa": "خدمات دیتاسنتر", "en": "Datacenter services", "ar": "خدمات مراكز البيانات"}, "datacenter"),
+        ("IPV4", {"fa": "اجاره IPv4", "en": "IPv4 leasing", "ar": "تأجير IPv4"}, "ipv4-leasing"),
+        ("CIP", {"fa": "CIP Express", "en": "CIP Express", "ar": "CIP Express"}, "cip-express"),
     ],
     "solution_text": {
         "fa": "طراحی، استقرار و پشتیبانی راهکارهای عملیاتی برای سازمان های حساس به کیفیت سرویس.",
@@ -174,6 +262,29 @@ def about(request):
     )
 
 
+def service_detail(request, slug):
+    service = SERVICE_PAGES.get(slug)
+    if not service:
+        raise Http404("Service page not found")
+    canonical = _absolute(request, reverse("website:service_detail", kwargs={"slug": slug}))
+    related_services = [
+        {**SERVICE_PAGES[related_slug], "slug": related_slug}
+        for related_slug in service["related"]
+        if related_slug in SERVICE_PAGES
+    ]
+    return render(
+        request,
+        "website/service_detail.html",
+        {
+            "canonical": canonical,
+            "home_url": _absolute(request, reverse("website:home")),
+            "service": service,
+            "related_services": related_services,
+            "slug": slug,
+        },
+    )
+
+
 def robots_txt(request):
     body = "\n".join(
         [
@@ -194,6 +305,14 @@ def sitemap_xml(request):
         for code, data in LANGUAGES.items()
     ]
     urls.append(("fa-about", request.build_absolute_uri(reverse("website:about")), "0.9"))
+    for slug in SERVICE_PAGES:
+        urls.append(
+            (
+                f"service-{slug}",
+                request.build_absolute_uri(reverse("website:service_detail", kwargs={"slug": slug})),
+                "0.9",
+            )
+        )
     today = timezone.localdate().isoformat()
     items = []
     language_urls = urls[: len(LANGUAGES)]

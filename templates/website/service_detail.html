@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.title }}{% endblock %}
+{% block description %}{{ service.description }}{% endblock %}
+
+{% block seo %}
+<link rel="canonical" href="{{ canonical }}">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="فاوا ایمن الکا">
+<meta property="og:title" content="{{ service.title }}">
+<meta property="og:description" content="{{ service.description }}">
+<meta property="og:url" content="{{ canonical }}">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "{{ service.headline|escapejs }}",
+  "description": "{{ service.description|escapejs }}",
+  "url": "{{ canonical }}",
+  "provider": {
+    "@type": "Organization",
+    "name": "فاوا ایمن الکا",
+    "alternateName": "Fava Emen Olka",
+    "url": "https://olkaa.ir/"
+  },
+  "areaServed": "IR",
+  "serviceType": "{{ service.eyebrow|escapejs }}"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "فاوا ایمن الکا", "item": "{{ home_url }}"},
+    {"@type": "ListItem", "position": 2, "name": "{{ service.eyebrow|escapejs }}", "item": "{{ canonical }}"}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block body %}
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">FAVA EMEN OLKA</span></span>
+    </a>
+    <nav class="links open-static">
+      <a href="/">صفحه اصلی</a>
+      <a href="/about/">درباره الکا</a>
+      <a href="/#contact">تماس</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="service-hero">
+    <div class="wrap service-hero-in">
+      <span class="eyebrow">{{ service.eyebrow }}</span>
+      <h1>{{ service.headline }}</h1>
+      <p>{{ service.lead }}</p>
+      <div class="service-meta">
+        <div><span>وضعیت</span><b>{{ service.status }}</b></div>
+        <div><span>شرکت</span><b>فاوا ایمن الکا</b></div>
+        <div><span>دامنه رسمی</span><b>olkaa.ir</b></div>
+      </div>
+      <div class="actions">
+        <a class="btn btn-gold" href="/#contact">درخواست مشاوره</a>
+        <a class="btn btn-ghost" href="{{ home_url }}">بازگشت به سایت</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="service-section">
+    <div class="wrap service-layout">
+      <article class="service-panel">
+        <span class="section-kicker">Capabilities</span>
+        <h2>قابلیت‌ها و محدوده خدمات</h2>
+        <div class="service-list">
+          {% for feature in service.features %}
+          <div>
+            <b>0{{ forloop.counter }}</b>
+            <span>{{ feature }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </article>
+      <aside class="service-panel">
+        <span class="section-kicker">Audience</span>
+        <h2>مناسب برای</h2>
+        <div class="keyword-list">
+          {% for item in service.audience %}
+          <span>{{ item }}</span>
+          {% endfor %}
+        </div>
+        <span class="section-kicker">Keywords</span>
+        <div class="keyword-list">
+          {% for keyword in service.keywords %}
+          <span>{{ keyword }}</span>
+          {% endfor %}
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="service-section service-section-muted">
+    <div class="wrap">
+      <div class="manager-heading">
+        <div>
+          <span class="section-kicker">Related Services</span>
+          <h2>صفحه‌های مرتبط</h2>
+        </div>
+      </div>
+      <div class="about-cards">
+        {% for related in related_services %}
+        <article>
+          <h2>{{ related.eyebrow }}</h2>
+          <p>{{ related.description }}</p>
+          <a class="text-link" href="/services/{{ related.slug }}/">مشاهده صفحه</a>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-in">
+    <a class="brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">FAVA EMEN OLKA</span></span>
+    </a>
+    <span>سایت رسمی olkaa.ir</span>
+  </div>
+</footer>
+{% endblock %}

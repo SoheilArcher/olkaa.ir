@@ -145,11 +145,12 @@
         <p>{{ content.solutions_text }}</p>
       </div>
       <div class="solution-grid">
-        {% for tag, titles in common.solutions %}
+        {% for tag, titles, slug in common.solutions %}
         <article class="card reveal">
           <span class="tag">{{ tag }}</span>
           <h3>{{ titles|get_item:lang }}</h3>
           <p>{{ common.solution_text|get_item:lang }}</p>
+          <a class="text-link" href="/services/{{ slug }}/">جزئیات</a>
         </article>
         {% endfor %}
       </div>

@@ -33,6 +33,7 @@ Purpose: Define how olkaa.ir should communicate Fava Imen Olka's company identit
 ## Content Governance
 
 - Product pages must be aligned with `products/`.
+- Public SEO service pages are tracked in `website/service-pages.md`.
 - Roadmap language must be aligned with `roadmap/`.
 - Research pages must be aligned with `research/`.
 - Knowledge Center content must be reviewed for security before publication.
