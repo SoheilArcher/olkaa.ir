@@ -23,12 +23,15 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "Fava Emen Olka",
-  "alternateName": ["فاوا ایمن الکا", "فاوا إمن أولكا"],
+  "name": "فاوا ایمن الکا",
+  "alternateName": ["Fava Emen Olka", "Fava Imen Olka", "Fava Imen Elka", "فاوا ایمن اُلکا", "فاوا إمن أولكا"],
+  "legalName": "فاوا ایمن الکا",
   "url": "https://olkaa.ir/",
+  "logo": "https://olkaa.ir/static/img/olkaa-logo.svg",
   "email": "admin@olkaa.ir",
   "telephone": "90000206",
   "foundingLocation": "Tehran, Iran",
+  "description": "{{ content.description|escapejs }}",
   "areaServed": ["IR", "AE", "IQ", "TR"],
   "sameAs": ["https://www.instagram.com/0lkatech/"],
   "knowsAbout": [
@@ -79,6 +82,7 @@
       </span>
     </a>
     <nav class="links" id="menu">
+      <a href="{{ about_url }}">{{ content.about_label }}</a>
       {% for section, label in nav_pairs %}
       <a href="#{{ section }}">{{ label }}</a>
       {% endfor %}
@@ -108,6 +112,7 @@
         </div>
         <div class="meta">
           <div><small>DOMAIN</small><span>olkaa.ir</span></div>
+          <div><small>OFFICIAL NAME</small><span>{{ content.brand }}</span></div>
           <div><small>OFFICES</small><span>{{ content.offices }}</span></div>
           <div><small>IPV4 POOL</small><span class="sg">64,000</span></div>
         </div>
@@ -227,6 +232,7 @@
         <p>{{ content.contact_text }}</p>
       </div>
       <div class="contact-box">
+        <a href="{{ about_url }}">{{ content.about_label }} / Official company page</a>
         <a href="https://www.olkaa.ir">www.olkaa.ir</a>
         <a href="mailto:admin@olkaa.ir">admin@olkaa.ir</a>
         <a href="tel:90000206">90000206</a>

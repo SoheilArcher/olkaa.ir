@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" role="img" aria-labelledby="title desc">
+  <title id="title">فاوا ایمن الکا - Fava Emen Olka</title>
+  <desc id="desc">Official logo mark for Fava Emen Olka</desc>
+  <rect width="640" height="240" fill="#0E2138"/>
+  <g transform="translate(72 54)">
+    <polygon points="0,132 32,132 56,76 24,76" fill="#fff"/>
+    <polygon points="54,132 86,132 110,44 78,44" fill="#fff"/>
+    <polygon points="108,132 140,132 164,8 132,8" fill="#C39A4D"/>
+  </g>
+  <text x="292" y="102" fill="#fff" font-family="Tahoma, Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">فاوا ایمن الکا</text>
+  <text x="292" y="138" fill="#C39A4D" font-family="Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="7" text-anchor="middle">FAVA EMEN OLKA</text>
+</svg>

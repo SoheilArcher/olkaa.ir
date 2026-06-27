@@ -15,6 +15,7 @@ LANGUAGES = {
         "hero": "سامانه یکپارچه فاوا ایمن الکا برای نرم افزار، عملیات و زیرساخت.",
         "lead": "یک هسته مشترک برای مدیریت مشتریان، امور مالی، خدمات دیتاسنتر، سامانه های هوانوردی و سرویس اختصاصی Home Check-in و CIP Express.",
         "nav": ["راهکارها", "CIP Express", "دیتاسنتر", "مشتریان", "دفاتر", "تماس"],
+        "about_label": "درباره الکا",
         "cta_primary": "مشاهده راهکارها",
         "cta_secondary": "سرویس اختصاصی",
         "employee": "ثبت نام کارمند",
@@ -41,6 +42,7 @@ LANGUAGES = {
         "hero": "Integrated software, operations and infrastructure for organizations that need speed, accuracy and trust.",
         "lead": "A shared operating core for customer management, finance, datacenter services, aviation systems, Home Check-in and CIP Express.",
         "nav": ["Solutions", "CIP Express", "Datacenter", "Clients", "Offices", "Contact"],
+        "about_label": "About",
         "cta_primary": "View solutions",
         "cta_secondary": "Signature service",
         "employee": "Employee signup",
@@ -67,6 +69,7 @@ LANGUAGES = {
         "hero": "منظومة متكاملة للبرمجيات والعمليات والبنية التحتية للمؤسسات التي تحتاج إلى الدقة والسرعة والأمان.",
         "lead": "نواة تشغيلية مشتركة لإدارة العملاء، المالية، خدمات مراكز البيانات، أنظمة الطيران، Home Check-in وCIP Express.",
         "nav": ["الحلول", "CIP Express", "مركز البيانات", "العملاء", "المكاتب", "اتصل بنا"],
+        "about_label": "عن الشركة",
         "cta_primary": "عرض الحلول",
         "cta_secondary": "الخدمة المميزة",
         "employee": "تسجيل الموظف",
@@ -83,6 +86,25 @@ LANGUAGES = {
         "copyright": "© 2026 فاوا إمن أولكا",
         "offices": "طهران · كيش · مطار الإمام الخميني",
     },
+}
+
+ABOUT_CONTENT = {
+    "title": "درباره فاوا ایمن الکا | سایت رسمی olkaa.ir",
+    "description": "فاوا ایمن الکا یک شرکت فناوری در حوزه نرم افزار سازمانی، شبکه، دیتاسنتر، اینترنت اختصاصی، هوانوردی و سرویس های CIP است. olkaa.ir سایت رسمی فاوا ایمن الکا است.",
+    "headline": "فاوا ایمن الکا، شرکت فناوری برای نرم افزار، شبکه و عملیات حساس",
+    "lead": "فاوا ایمن الکا با تمرکز بر راهکارهای نرم افزاری، خدمات دیتاسنتر، اینترنت اختصاصی، اجاره IP، سامانه های هوانوردی و سرویس های Home Check-in و CIP Express فعالیت می کند.",
+    "facts": [
+        ("نام رسمی", "فاوا ایمن الکا"),
+        ("نام انگلیسی", "Fava Emen Olka"),
+        ("دامنه رسمی", "olkaa.ir"),
+        ("حوزه فعالیت", "نرم افزار، شبکه، دیتاسنتر، هوانوردی و خدمات CIP"),
+        ("دفاتر", "تهران، کیش، فرودگاه امام خمینی"),
+    ],
+    "sections": [
+        ("راهکارهای نرم افزاری", "طراحی و توسعه سامانه های سازمانی برای مدیریت مشتریان، عملیات، امور مالی، درآمد و فرایندهای داخلی."),
+        ("شبکه و دیتاسنتر", "ارائه خدمات زیرساختی شامل اینترنت اختصاصی، پهنای باند، اجاره IPv4، مانیتورینگ و پشتیبانی سرویس."),
+        ("هوانوردی و CIP", "توسعه و پشتیبانی سرویس های عملیاتی برای پذیرش مسافر، Home Check-in، تشریفات اختصاصی و تجربه فرودگاهی."),
+    ],
 }
 
 COMMON = {
@@ -134,6 +156,20 @@ def home(request, lang="fa"):
             "nav_pairs": nav_pairs,
             "canonical": canonical,
             "alternates": alternates,
+            "about_url": _absolute(request, reverse("website:about")),
+        },
+    )
+
+
+def about(request):
+    canonical = _absolute(request, reverse("website:about"))
+    return render(
+        request,
+        "website/about.html",
+        {
+            "content": ABOUT_CONTENT,
+            "canonical": canonical,
+            "home_url": _absolute(request, reverse("website:home")),
         },
     )
 
@@ -154,23 +190,25 @@ def robots_txt(request):
 
 def sitemap_xml(request):
     urls = [
-        (code, request.build_absolute_uri("/" + data["path"]))
+        (code, request.build_absolute_uri("/" + data["path"]), "1.0" if code == "fa" else "0.8")
         for code, data in LANGUAGES.items()
     ]
+    urls.append(("fa-about", request.build_absolute_uri(reverse("website:about")), "0.9"))
     today = timezone.localdate().isoformat()
     items = []
-    for _code, url in urls:
+    language_urls = urls[: len(LANGUAGES)]
+    for code, url, priority in urls:
         links = "".join(
             f'<xhtml:link rel="alternate" hreflang="{alt_code}" href="{alt_url}" />'
-            for alt_code, alt_url in urls
-        )
-        links += f'<xhtml:link rel="alternate" hreflang="x-default" href="{urls[0][1]}" />'
+            for alt_code, alt_url, _priority in language_urls
+        ) if code in LANGUAGES else ""
+        links += f'<xhtml:link rel="alternate" hreflang="x-default" href="{language_urls[0][1]}" />' if code in LANGUAGES else ""
         items.append(
             "<url>"
             f"<loc>{url}</loc>"
             f"<lastmod>{today}</lastmod>"
             "<changefreq>weekly</changefreq>"
-            "<priority>0.8</priority>"
+            f"<priority>{priority}</priority>"
             f"{links}"
             "</url>"
         )

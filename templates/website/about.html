@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ content.title }}{% endblock %}
+{% block description %}{{ content.description }}{% endblock %}
+
+{% block seo %}
+<link rel="canonical" href="{{ canonical }}">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="فاوا ایمن الکا">
+<meta property="og:title" content="{{ content.title }}">
+<meta property="og:description" content="{{ content.description }}">
+<meta property="og:url" content="{{ canonical }}">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "{{ content.title|escapejs }}",
+  "url": "{{ canonical }}",
+  "inLanguage": "fa-IR",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "فاوا ایمن الکا",
+    "url": "https://olkaa.ir/"
+  },
+  "about": {
+    "@type": "Organization",
+    "name": "فاوا ایمن الکا",
+    "alternateName": ["Fava Emen Olka", "Fava Imen Olka", "Fava Imen Elka", "فاوا ایمن اُلکا"],
+    "url": "https://olkaa.ir/",
+    "email": "admin@olkaa.ir",
+    "telephone": "90000206",
+    "sameAs": ["https://www.instagram.com/0lkatech/"]
+  }
+}
+</script>
+{% endblock %}
+
+{% block body %}
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">FAVA EMEN OLKA</span></span>
+    </a>
+    <nav class="links open-static">
+      <a href="/">صفحه اصلی</a>
+      <a href="/#solutions">راهکارها</a>
+      <a href="/#contact">تماس</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="about-hero">
+    <div class="wrap about-hero-in">
+      <span class="eyebrow">Official Company Page</span>
+      <h1>{{ content.headline }}</h1>
+      <p>{{ content.lead }}</p>
+      <div class="actions">
+        <a class="btn btn-gold" href="/#contact">تماس با فاوا ایمن الکا</a>
+        <a class="btn btn-ghost" href="{{ home_url }}">بازگشت به سایت</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="wrap about-grid">
+      <div>
+        <div class="section-kicker">Company Identity</div>
+        <h2>اطلاعات رسمی برند</h2>
+        <p>این صفحه برای معرفی رسمی فاوا ایمن الکا و اتصال سیگنال‌های برند، دامنه، خدمات و مسیرهای تماس ساخته شده است.</p>
+      </div>
+      <div class="fact-list">
+        {% for label, value in content.facts %}
+        <article>
+          <span>{{ label }}</span>
+          <b>{{ value }}</b>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="wrap">
+      <div class="section-kicker">Services</div>
+      <div class="about-cards">
+        {% for title, text in content.sections %}
+        <article>
+          <h2>{{ title }}</h2>
+          <p>{{ text }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-in">
+    <a class="brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">FAVA EMEN OLKA</span></span>
+    </a>
+    <span>سایت رسمی olkaa.ir</span>
+  </div>
+</footer>
+{% endblock %}
