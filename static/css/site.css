@@ -128,6 +128,14 @@ header.nav {
 .btn-gold:hover { background: var(--gold-soft); }
 .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, .28); }
 .btn-ghost:hover { color: var(--gold-soft); border-color: var(--gold); }
+.portal-ghost {
+  color: var(--navy);
+  border-color: rgba(14, 33, 56, .22);
+}
+.portal-ghost:hover {
+  color: #9a7f44;
+  border-color: var(--gold);
+}
 
 .hero {
   position: relative;
@@ -840,6 +848,33 @@ footer {
   border-radius: 6px;
   padding: 9px 11px;
   font: inherit;
+}
+.portal-form select,
+.portal-form textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--navy);
+  background: var(--panel);
+}
+.portal-form textarea {
+  resize: vertical;
+  line-height: 1.9;
+}
+.portal-form select:focus,
+.portal-form textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(195, 154, 77, .15);
+}
+.form-span-full {
+  grid-column: 1 / -1;
+}
+.ticket-form-section {
+  max-width: 920px;
 }
 .request-actions {
   grid-column: 1 / -1;

@@ -6,6 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
 from hr.models import StaffRegistrationRequest
+from ticketing.models import Ticket
 from .throttle import ThrottleBlocked, check_throttle, register_attempt, reset_attempts
 
 
@@ -120,4 +121,23 @@ class StaffRegistrationForm(forms.Form):
             requested_department=self.cleaned_data.get("requested_department", ""),
             requested_job_title=self.cleaned_data.get("requested_job_title", ""),
             requested_ticketing=True,
+        )
+
+
+class PortalTicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ("title", "priority", "department", "party", "description")
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 6}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["title"].widget.attrs.update({"placeholder": "مثال: قطعی سرویس سایت مشتری"})
+        self.fields["department"].widget.attrs.update({"placeholder": "مثال: پشتیبانی، شبکه، مالی"})
+        self.fields["party"].required = False
+        self.fields["party"].empty_label = "بدون طرف‌حساب"
+        self.fields["description"].widget.attrs.update(
+            {"placeholder": "شرح کوتاه، واضح و قابل پیگیری از مشکل یا درخواست را بنویسید."}
         )

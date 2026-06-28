@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}تیکتینگ فاوا ایمن الکا{% endblock %}
+
+{% block body %}
+<main class="portal-shell">
+  <aside class="portal-side">
+    <a class="brand portal-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">TICKETING</span></span>
+    </a>
+    <nav>
+      <a href="/portal/">داشبورد</a>
+      <a href="/portal/tickets/">تیکتینگ</a>
+      <a href="/portal/tickets/new/">ثبت تیکت</a>
+      <a href="/portal/live/">اتاق کنترل زنده</a>
+      <a href="/portal/shifts/">شیفت‌بندی</a>
+      <a href="/portal/manager/">مدیریت داخلی</a>
+      <a href="/admin/">Django admin</a>
+    </nav>
+  </aside>
+
+  <section class="portal-main">
+    <header class="portal-top">
+      <div>
+        <span class="eyebrow">Support Desk</span>
+        <h1>تیکتینگ پورتال</h1>
+        <p>ثبت، مشاهده و پیگیری سریع درخواست‌ها بدون ورود به فرم‌های پیچیده Django admin.</p>
+      </div>
+      <a class="btn btn-gold" href="/portal/tickets/new/">ثبت تیکت جدید</a>
+    </header>
+
+    {% if messages %}
+    <div class="portal-messages">
+      {% for message in messages %}
+      <div class="portal-message {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="manager-stats">
+      {% for item in stats %}
+      <article>
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+        <small>{{ item.caption }}</small>
+      </article>
+      {% endfor %}
+    </div>
+
+    <section class="manager-section">
+      <div class="manager-heading">
+        <div>
+          <span class="eyebrow">Ticket Queue</span>
+          <h2>آخرین تیکت‌ها</h2>
+        </div>
+        <a href="/admin/ticketing/ticket/">نمایش در ادمین</a>
+      </div>
+      <div class="compact-table">
+        {% for ticket in tickets %}
+        <a href="/admin/ticketing/ticket/{{ ticket.pk }}/change/">
+          <span>{{ ticket.title }}</span>
+          <small>{{ ticket.get_status_display }} / {{ ticket.get_priority_display }}</small>
+          <b>{{ ticket.assigned_to.get_full_name|default:"بدون مسئول" }}</b>
+        </a>
+        {% empty %}
+        <div class="empty-state">هنوز تیکتی ثبت نشده است.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </section>
+</main>
+{% endblock %}

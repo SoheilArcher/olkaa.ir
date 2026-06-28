@@ -6,6 +6,7 @@ from django.urls import reverse
 from core.models import Role
 from .access import user_can_access_module
 from .security import OTP_CODE_HASH, OTP_EXPIRES_AT, OTP_USER_ID
+from ticketing.models import Ticket
 
 
 @override_settings(
@@ -105,3 +106,51 @@ class StaffPortalThrottleTests(TestCase):
         self.client.post(url, {"action": "resend"}, REMOTE_ADDR="10.0.0.3")
         response = self.client.post(url, {"action": "resend"}, REMOTE_ADDR="10.0.0.3", follow=True)
         self.assertContains(response, "درخواست‌های زیادی", status_code=200)
+
+
+@override_settings(EMAIL_OTP_ENABLED=False)
+class StaffPortalTicketTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        User = get_user_model()
+        self.staff_user = User.objects.create_user(
+            username="plain@example.com",
+            email="plain@example.com",
+            password="StrongPass123!",
+            is_staff=True,
+        )
+        self.ticket_user = User.objects.create_user(
+            username="ticket@example.com",
+            email="ticket@example.com",
+            password="StrongPass123!",
+            is_staff=True,
+        )
+        self.ticket_user.roles.add(Role.objects.create(name="تیکتینگ", slug="ticket-operator"))
+
+    def test_ticket_form_requires_ticketing_access(self):
+        self.client.force_login(self.staff_user)
+        response = self.client.get(reverse("staff_portal:ticket_new"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_ticket_operator_can_open_ticket_form(self):
+        self.client.force_login(self.ticket_user)
+        response = self.client.get(reverse("staff_portal:ticket_new"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "ثبت تیکت جدید")
+
+    def test_ticket_operator_can_create_ticket(self):
+        self.client.force_login(self.ticket_user)
+        response = self.client.post(
+            reverse("staff_portal:ticket_new"),
+            {
+                "title": "قطعی سایت مشتری",
+                "priority": Ticket.HIGH,
+                "department": "پشتیبانی",
+                "party": "",
+                "description": "سایت مشتری از بیرون پاسخ نمی‌دهد.",
+            },
+        )
+        self.assertRedirects(response, reverse("staff_portal:tickets"))
+        ticket = Ticket.objects.get(title="قطعی سایت مشتری")
+        self.assertEqual(ticket.requester, self.ticket_user)
+        self.assertEqual(ticket.status, Ticket.OPEN)

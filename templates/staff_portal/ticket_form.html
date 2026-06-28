@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}ثبت تیکت جدید | فاوا ایمن الکا{% endblock %}
+
+{% block body %}
+<main class="portal-shell">
+  <aside class="portal-side">
+    <a class="brand portal-brand" href="/">
+      <svg class="mark" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+        <polygon points="15,85 31,85 43,57 27,57" fill="#fff"/>
+        <polygon points="42,85 58,85 70,41 54,41" fill="#fff"/>
+        <polygon points="69,85 85,85 97,23 81,23" fill="#C39A4D"/>
+      </svg>
+      <span><span class="nm">فاوا ایمن الکا</span><span class="en">NEW TICKET</span></span>
+    </a>
+    <nav>
+      <a href="/portal/">داشبورد</a>
+      <a href="/portal/tickets/">تیکتینگ</a>
+      <a href="/portal/tickets/new/">ثبت تیکت</a>
+      <a href="/portal/live/">اتاق کنترل زنده</a>
+      <a href="/portal/shifts/">شیفت‌بندی</a>
+      <a href="/portal/manager/">مدیریت داخلی</a>
+      <a href="/admin/">Django admin</a>
+    </nav>
+  </aside>
+
+  <section class="portal-main">
+    <header class="portal-top">
+      <div>
+        <span class="eyebrow">Simple Support Form</span>
+        <h1>ثبت تیکت جدید</h1>
+        <p>فقط اطلاعات لازم را وارد کنید. وضعیت و درخواست‌دهنده به صورت خودکار ثبت می‌شود.</p>
+      </div>
+      <a class="btn btn-ghost portal-ghost" href="/portal/tickets/">بازگشت به تیکت‌ها</a>
+    </header>
+
+    <section class="manager-section ticket-form-section">
+      <div class="manager-heading">
+        <div>
+          <span class="eyebrow">Ticket Details</span>
+          <h2>اطلاعات درخواست</h2>
+        </div>
+      </div>
+
+      <form class="auth-form portal-form" method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="form-alert">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="form-grid">
+          {% for field in form %}
+          <label {% if field.name == "description" %}class="form-span-full"{% endif %}>
+            {{ field.label }}
+            {{ field }}
+            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+          </label>
+          {% endfor %}
+        </div>
+        <div class="request-actions">
+          <button class="btn btn-gold" type="submit">ثبت تیکت</button>
+          <a class="btn btn-ghost portal-ghost" href="/portal/tickets/">انصراف</a>
+        </div>
+      </form>
+    </section>
+  </section>
+</main>
+{% endblock %}

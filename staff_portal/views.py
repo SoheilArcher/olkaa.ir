@@ -21,7 +21,7 @@ from datacenter.models import PingCheck, PingTarget
 from hr.models import Attendance, EmployeeProfile, Payroll, ShiftAssignment, StaffRegistrationRequest
 from ticketing.models import Ticket, TicketReply
 
-from .forms import EmailOtpForm, RegistrationCodeForm, StaffRegistrationForm
+from .forms import EmailOtpForm, PortalTicketForm, RegistrationCodeForm, StaffRegistrationForm
 from .security import ensure_otp_challenge, verify_otp_code, OTP_LAST_ERROR
 from .access import ACCESS_FIELDS, ACCESS_PERMISSIONS, staff_module_required, user_can_access_module
 from .throttle import ThrottleBlocked, check_throttle, register_attempt, reset_attempts
@@ -116,8 +116,8 @@ def dashboard(request):
         {
             "title": "تیکتینگ",
             "caption": "ارسال درخواست، ارجاع، اولویت‌بندی و پیگیری",
-            "href": "/admin/ticketing/",
-            "status": "مرحله اول",
+            "href": "/portal/tickets/",
+            "status": "فعال",
             "modules": ("ticketing",),
         },
         {
@@ -148,6 +148,45 @@ def dashboard(request):
         if not module["modules"] or any(user_can_access_module(request.user, item) for item in module["modules"])
     ]
     return render(request, "staff_portal/dashboard.html", {"modules": modules})
+
+
+@staff_module_required("ticketing")
+def tickets(request):
+    ticket_list = (
+        Ticket.objects.select_related("requester", "assigned_to", "party")
+        .order_by("-created_at")[:80]
+    )
+    stats = [
+        {"label": "باز", "value": Ticket.objects.filter(status=Ticket.OPEN).count(), "caption": "در انتظار شروع"},
+        {
+            "label": "در حال بررسی",
+            "value": Ticket.objects.filter(status=Ticket.IN_PROGRESS).count(),
+            "caption": "در جریان",
+        },
+        {
+            "label": "فوری",
+            "value": Ticket.objects.filter(priority=Ticket.URGENT).exclude(status=Ticket.CLOSED).count(),
+            "caption": "نیازمند اقدام سریع",
+        },
+        {"label": "بسته", "value": Ticket.objects.filter(status=Ticket.CLOSED).count(), "caption": "آرشیو شده"},
+    ]
+    return render(request, "staff_portal/tickets.html", {"stats": stats, "tickets": ticket_list})
+
+
+@staff_module_required("ticketing")
+def ticket_new(request):
+    if request.method == "POST":
+        form = PortalTicketForm(request.POST)
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.requester = request.user
+            ticket.status = Ticket.OPEN
+            ticket.save()
+            messages.success(request, "تیکت ثبت شد و در صف پیگیری قرار گرفت.")
+            return redirect("staff_portal:tickets")
+    else:
+        form = PortalTicketForm()
+    return render(request, "staff_portal/ticket_form.html", {"form": form})
 
 
 @login_required
